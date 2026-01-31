@@ -62,6 +62,7 @@ class PricingRequest(BaseModel):
     vehicle: VehicleInput
     trip: TripInput
     passengers: int = Field(1, ge=1, le=8, description="Nombre de passagers")
+    use_openroute: bool = Field(True, description="Utiliser OpenRouteService pour le calcul de distance")
 
 
 class PricingResponse(BaseModel):
@@ -74,6 +75,8 @@ class PricingResponse(BaseModel):
     co2_category: str
     co2_color: str
     trip_info: Dict
+    co2_trip_kg: float  # CO2 total du trajet en kg
+    co2_saved_kg: float  # CO2 évité grâce au covoiturage
     explanation: str
     breakdown: List[Dict]
 
@@ -373,8 +376,60 @@ async def calculate_pricing(request: PricingRequest):
     # 1. Rechercher le véhicule
     vehicle_info = await search_vehicle(request.vehicle)
 
-    # 2. Calculer le trajet
-    trip_info = await calculate_trip(request.trip)
+    # 2. Calculer le trajet - Utiliser OpenRouteService si activé
+    trip_info = None
+
+    # Utiliser OpenRouteService seulement si demandé ET configuré
+    if request.use_openroute and openroute_service and openroute_service.is_configured():
+        try:
+            route = await openroute_service.calculate_route_by_names(
+                request.trip.origin,
+                request.trip.destination
+            )
+            if route:
+                from backend.distance_calculator import estimate_traffic_factor, get_week_type
+
+                traffic_factor, traffic_desc = estimate_traffic_factor(
+                    request.trip.day_of_week,
+                    request.trip.hour,
+                    request.trip.is_holiday,
+                    request.trip.is_summer
+                )
+
+                adjusted_duration = route.duration_hours * traffic_factor
+                adj_hours = int(adjusted_duration)
+                adj_minutes = int((adjusted_duration - adj_hours) * 60)
+
+                trip_info = {
+                    "source": "openroute",
+                    "distance_km": route.distance_km,
+                    "duration_hours": route.duration_hours,
+                    "duration_formatted": route.duration_formatted,
+                    "traffic_factor": traffic_factor,
+                    "traffic_description": traffic_desc,
+                    "adjusted_duration_hours": round(adjusted_duration, 2),
+                    "adjusted_duration_formatted": f"{adj_hours}h{adj_minutes:02d}",
+                    "week_type": get_week_type(request.trip.is_holiday, request.trip.is_summer),
+                    "origin": {"name": request.trip.origin, "lon": route.origin_coords[0], "lat": route.origin_coords[1]},
+                    "destination": {"name": request.trip.destination, "lon": route.destination_coords[0], "lat": route.destination_coords[1]}
+                }
+        except Exception as e:
+            print(f"Erreur OpenRouteService: {e}, fallback local")
+
+    # Fallback sur le calculateur local (ou si use_openroute=false)
+    if trip_info is None:
+        trip_info = trip_calculator.calculate_trip(
+            origin=request.trip.origin,
+            destination=request.trip.destination,
+            day_of_week=request.trip.day_of_week,
+            hour=request.trip.hour,
+            is_holiday=request.trip.is_holiday,
+            is_summer=request.trip.is_summer
+        )
+        trip_info["source"] = "local"
+
+    if "error" in trip_info:
+        raise HTTPException(status_code=400, detail=trip_info["error"])
 
     # 3. Calculer les scores
     energy = vehicle_info.get('energie', request.vehicle.energy or '')
@@ -437,7 +492,15 @@ async def calculate_pricing(request: PricingRequest):
         "detail": "par personne"
     })
 
-    # 10. Explication
+    # 10. Calcul du CO2 du trajet
+    # CO2 total = émissions (g/km) × distance (km) / 1000 = kg
+    co2_trip_kg = (co2_g_km * distance) / 1000
+
+    # CO2 évité = CO2 total du trajet
+    # En covoiturant, on évite qu'un autre véhicule fasse ce trajet
+    co2_saved_kg = co2_trip_kg
+
+    # 11. Explication
     if eco_score >= 0.7:
         explanation = "Véhicule à faibles émissions"
     elif eco_score < 0.45 and social_score <= 0.3:
@@ -457,6 +520,8 @@ async def calculate_pricing(request: PricingRequest):
         co2_category=co2_cat,
         co2_color=co2_color,
         trip_info=trip_info,
+        co2_trip_kg=round(co2_trip_kg, 2),
+        co2_saved_kg=round(co2_saved_kg, 2),
         explanation=explanation,
         breakdown=breakdown
     )

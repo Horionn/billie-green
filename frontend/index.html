@@ -210,6 +210,89 @@
             font-weight: 400;
         }
 
+        /* Toggle Switch pour OpenRouteService */
+        .settings-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #16a34a;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .toggle-status.on {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .toggle-status.off {
+            background: #fef9c3;
+            color: #ca8a04;
+        }
+
         .btn {
             background: #16a34a;
             color: white;
@@ -492,6 +575,18 @@
         <h1>Calculateur de tarif</h1>
         <p class="subtitle">Estimez votre tarif personnalisé selon l'impact carbone et votre profil.</p>
 
+        <!-- Toggle OpenRouteService -->
+        <div class="settings-bar">
+            <div class="toggle-wrapper">
+                <span class="toggle-label">OpenRouteService</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="useOpenRoute" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-status on" id="orsStatus">API</span>
+            </div>
+        </div>
+
         <form id="pricingForm">
             <!-- TRAJET -->
             <div class="card">
@@ -664,6 +759,7 @@
         const API_BASE = 'http://localhost:8000';
         let apiAvailable = false;
         let openrouteAvailable = false;
+        let useOpenRoute = true;  // Toggle pour activer/désactiver OpenRouteService
 
         // Cache pour les données
         let brandsCache = [];
@@ -1177,7 +1273,8 @@
                     is_holiday: document.getElementById('isHoliday').checked,
                     is_summer: false
                 },
-                passengers: parseInt(document.getElementById('passengers').value)
+                passengers: parseInt(document.getElementById('passengers').value),
+                use_openroute: useOpenRoute  // Toggle OpenRouteService
             };
 
             if (formData.trip.origin === formData.trip.destination) {
@@ -1271,10 +1368,16 @@
             document.getElementById('tripDuration').textContent = tripInfo.adjusted_duration_formatted ||
                 `${Math.floor(tripInfo.distance_km / 110)}h${String(Math.round((tripInfo.distance_km / 110 % 1) * 60)).padStart(2, '0')}`;
 
-            // CO2 saved
-            const co2PerKm = data.vehicle_info.co2_g_km || (data.eco_score > 0.8 ? 0 : data.eco_score > 0.6 ? 80 : 150);
-            const co2Saved = (co2PerKm * tripInfo.distance_km / 1000) * (1 - 1/passengers);
-            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
+            // CO2 du trajet - utiliser les valeurs calculées par le backend
+            const co2TripKg = data.co2_trip_kg || 0;
+            const co2SavedKg = data.co2_saved_kg || 0;
+            document.getElementById('tripCO2').textContent = co2SavedKg.toFixed(1);
+
+            // Afficher aussi le CO2 total du trajet
+            const tripCO2Label = document.querySelector('#tripCO2').closest('.trip-stat').querySelector('.trip-stat-label');
+            if (tripCO2Label) {
+                tripCO2Label.innerHTML = `CO₂ évité<br><small style="color:#888">(total: ${co2TripKg.toFixed(1)} kg)</small>`;
+            }
 
             // Source du calcul de distance
             const tripSource = document.getElementById('tripSource');
@@ -1460,6 +1563,38 @@
 
         // Définir le jour actuel
         document.getElementById('dayOfWeek').value = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+        // =====================================================================
+        // TOGGLE OPENROUTESERVICE
+        // =====================================================================
+
+        const openRouteToggle = document.getElementById('useOpenRoute');
+        const orsStatusBadge = document.getElementById('orsStatus');
+
+        // Charger l'état depuis localStorage
+        const savedState = localStorage.getItem('useOpenRoute');
+        if (savedState !== null) {
+            useOpenRoute = savedState === 'true';
+            openRouteToggle.checked = useOpenRoute;
+        }
+        updateOrsStatus();
+
+        openRouteToggle.addEventListener('change', (e) => {
+            useOpenRoute = e.target.checked;
+            localStorage.setItem('useOpenRoute', useOpenRoute);
+            updateOrsStatus();
+            console.log(`OpenRouteService: ${useOpenRoute ? 'activé' : 'désactivé'}`);
+        });
+
+        function updateOrsStatus() {
+            if (useOpenRoute) {
+                orsStatusBadge.textContent = 'API';
+                orsStatusBadge.className = 'toggle-status on';
+            } else {
+                orsStatusBadge.textContent = 'Local';
+                orsStatusBadge.className = 'toggle-status off';
+            }
+        }
     </script>
 </body>
 </html>
