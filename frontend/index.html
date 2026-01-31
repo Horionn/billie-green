@@ -632,28 +632,11 @@
             document.getElementById('results').classList.remove('visible');
             document.getElementById('submitBtn').disabled = true;
 
-            // Toujours utiliser le calcul local pour éviter les erreurs API
+            // Calcul local
             displayLocalResults(formData);
-            /*
-            try {
-                const response = await fetch(`${API_BASE}/api/pricing/calculate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
 
-                if (!response.ok) throw new Error('API Error');
-                const data = await response.json();
-                displayResults(data, formData.passengers);
-            } catch (error) {
-                console.log('API indisponible, calcul local');
-                displayLocalResults(formData);
-            }
-            */
-            finally {
-                document.getElementById('loading').classList.remove('visible');
-                document.getElementById('submitBtn').disabled = false;
-            }
+            document.getElementById('loading').classList.remove('visible');
+            document.getElementById('submitBtn').disabled = false;
         });
 
         function displayResults(data, passengers) {
