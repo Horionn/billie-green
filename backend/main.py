@@ -9,13 +9,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
 
 from backend.vehicle_database import VehicleDatabase
 from backend.distance_calculator import TripCalculator
+from backend.openroute_service import (
+    get_openroute_service,
+    get_city_coords_fallback,
+    OpenRouteService
+)
 
 
 # Initialisation de l'application
@@ -76,6 +81,7 @@ class PricingResponse(BaseModel):
 # Services
 trip_calculator = TripCalculator()
 vehicle_db = None
+openroute_service: Optional[OpenRouteService] = None
 DATA_PATH = Path(__file__).parent.parent / "ADEME-CarLabelling.csv"
 
 
@@ -241,13 +247,29 @@ def get_co2_category(co2_g_km: float = None, eco_score: float = None) -> tuple:
 
 @app.on_event("startup")
 async def startup_event():
-    global vehicle_db
+    global vehicle_db, openroute_service
     try:
         vehicle_db = VehicleDatabase(str(DATA_PATH))
-        print(f"✓ Base de données chargée: {len(vehicle_db.df)} véhicules")
+        print(f"✓ Base de données ADEME chargée: {len(vehicle_db.df)} véhicules")
     except Exception as e:
-        print(f"✗ Erreur chargement base: {e}")
+        print(f"✗ Erreur chargement base ADEME: {e}")
         vehicle_db = None
+
+    # Initialiser OpenRouteService
+    openroute_service = get_openroute_service()
+    if openroute_service.is_configured():
+        print("✓ OpenRouteService API configurée")
+    else:
+        print("⚠ OpenRouteService API non configurée (OPENROUTE_API_KEY manquante)")
+        print("  → Utilisation du calcul de distance local en fallback")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Ferme les connexions proprement."""
+    global openroute_service
+    if openroute_service:
+        await openroute_service.close()
 
 
 @app.get("/")
@@ -447,6 +469,341 @@ async def list_cities():
         {"name": city.name, "region": city.region, "key": key}
         for key, city in CITIES_DB.items()
     ]
+
+
+# ============================================================================
+# NOUVEAUX ENDPOINTS: AUTOCOMPLÉTION ADEME
+# ============================================================================
+
+@app.get("/api/vehicle/autocomplete/brands")
+async def autocomplete_brands(q: str = Query(..., min_length=1, description="Texte à rechercher")):
+    """
+    Autocomplétion des marques de véhicules depuis la base ADEME.
+
+    Args:
+        q: Texte à rechercher (min 1 caractère)
+
+    Returns:
+        Liste des marques correspondantes
+    """
+    if vehicle_db is None:
+        raise HTTPException(status_code=500, detail="Base de données non disponible")
+
+    query = q.upper().strip()
+    all_brands = vehicle_db.get_all_brands()
+
+    # Filtrer les marques qui commencent par la requête ou la contiennent
+    matches = []
+    for brand in all_brands:
+        if brand.startswith(query):
+            matches.insert(0, brand)  # Priorité aux correspondances exactes au début
+        elif query in brand:
+            matches.append(brand)
+
+    return matches[:10]  # Limiter à 10 résultats
+
+
+@app.get("/api/vehicle/autocomplete/models")
+async def autocomplete_models(
+    brand: str = Query(..., description="Marque du véhicule"),
+    q: str = Query("", description="Texte à rechercher dans les modèles")
+):
+    """
+    Autocomplétion des modèles pour une marque donnée depuis la base ADEME.
+
+    Args:
+        brand: Marque du véhicule
+        q: Texte à rechercher (optionnel)
+
+    Returns:
+        Liste des modèles correspondants avec leurs infos CO2
+    """
+    if vehicle_db is None:
+        raise HTTPException(status_code=500, detail="Base de données non disponible")
+
+    brand = brand.upper().strip()
+    query = q.upper().strip()
+
+    # Obtenir tous les modèles pour cette marque
+    all_models = vehicle_db.get_models_for_brand(brand)
+
+    if not query:
+        # Retourner tous les modèles avec leurs infos
+        results = []
+        seen = set()
+        for model in all_models[:30]:  # Limiter à 30
+            if model not in seen:
+                seen.add(model)
+                # Récupérer les infos CO2 du modèle
+                vehicle_info = vehicle_db.search_vehicle(brand, model)
+                if vehicle_info:
+                    results.append({
+                        "model": model,
+                        "co2_g_km": vehicle_info.get("co2_g_km", 150),
+                        "energie": vehicle_info.get("energie", "INCONNU")
+                    })
+                else:
+                    results.append({
+                        "model": model,
+                        "co2_g_km": 150,
+                        "energie": "INCONNU"
+                    })
+        return results
+
+    # Filtrer par la requête
+    matches = []
+    seen = set()
+    for model in all_models:
+        if model in seen:
+            continue
+        seen.add(model)
+
+        if model.startswith(query) or query in model:
+            vehicle_info = vehicle_db.search_vehicle(brand, model)
+            if vehicle_info:
+                matches.append({
+                    "model": model,
+                    "co2_g_km": vehicle_info.get("co2_g_km", 150),
+                    "energie": vehicle_info.get("energie", "INCONNU"),
+                    "priority": 0 if model.startswith(query) else 1
+                })
+
+    # Trier par priorité (commence par > contient)
+    matches.sort(key=lambda x: (x.get("priority", 1), x["model"]))
+    for m in matches:
+        m.pop("priority", None)
+
+    return matches[:15]
+
+
+@app.get("/api/vehicle/search-quick")
+async def search_vehicle_quick(
+    brand: str = Query(..., description="Marque"),
+    model: str = Query(..., description="Modèle")
+):
+    """
+    Recherche rapide d'un véhicule pour obtenir ses émissions CO2.
+
+    Args:
+        brand: Marque du véhicule
+        model: Modèle du véhicule
+
+    Returns:
+        Infos du véhicule (CO2, énergie, etc.)
+    """
+    if vehicle_db is None:
+        return {
+            "found": False,
+            "co2_g_km": 150,
+            "energie": "INCONNU"
+        }
+
+    result = vehicle_db.search_vehicle(brand, model)
+
+    if result:
+        co2 = result.get("co2_g_km", 150)
+        eco_score = calculate_eco_score(result.get("energie", ""), model, co2)
+        co2_cat, co2_color = get_co2_category(co2, eco_score)
+
+        return {
+            "found": True,
+            "marque": result.get("marque"),
+            "modele": result.get("modele"),
+            "co2_g_km": co2,
+            "energie": result.get("energie", "INCONNU"),
+            "co2_category": co2_cat,
+            "co2_color": co2_color,
+            "eco_score": round(eco_score, 2)
+        }
+
+    return {
+        "found": False,
+        "co2_g_km": 150,
+        "energie": "INCONNU"
+    }
+
+
+# ============================================================================
+# NOUVEAUX ENDPOINTS: OPENROUTESERVICE
+# ============================================================================
+
+@app.get("/api/openroute/status")
+async def openroute_status():
+    """Vérifie le statut de l'API OpenRouteService."""
+    if openroute_service is None:
+        return {"configured": False, "message": "Service non initialisé"}
+
+    return {
+        "configured": openroute_service.is_configured(),
+        "message": "API OpenRouteService prête" if openroute_service.is_configured()
+                   else "Clé API manquante (OPENROUTE_API_KEY)"
+    }
+
+
+@app.get("/api/openroute/autocomplete")
+async def openroute_autocomplete(
+    q: str = Query(..., min_length=2, description="Texte à rechercher"),
+    country: str = Query("FR", description="Code pays ISO")
+):
+    """
+    Autocomplétion d'adresses/villes via OpenRouteService.
+
+    Args:
+        q: Texte à rechercher (min 2 caractères)
+        country: Code pays (défaut: FR)
+
+    Returns:
+        Liste de suggestions avec coordonnées
+    """
+    if openroute_service is None or not openroute_service.is_configured():
+        # Fallback: retourner les villes locales correspondantes
+        from backend.openroute_service import FRENCH_CITIES_COORDS
+        query = q.lower()
+        results = []
+        for city, coords in FRENCH_CITIES_COORDS.items():
+            if query in city:
+                results.append({
+                    "name": city.replace("-", " ").title(),
+                    "label": f"{city.replace('-', ' ').title()}, France",
+                    "region": "",
+                    "country": "France",
+                    "lon": coords[0],
+                    "lat": coords[1]
+                })
+        return results[:5]
+
+    return await openroute_service.autocomplete(q, country, limit=5)
+
+
+@app.get("/api/openroute/geocode")
+async def openroute_geocode(
+    place: str = Query(..., description="Nom du lieu à géocoder")
+):
+    """
+    Géocode un nom de lieu en coordonnées.
+
+    Args:
+        place: Nom de la ville ou adresse
+
+    Returns:
+        Coordonnées (lon, lat) ou erreur
+    """
+    # Essayer d'abord le fallback local (plus rapide)
+    local_coords = get_city_coords_fallback(place)
+    if local_coords:
+        return {
+            "found": True,
+            "source": "local",
+            "lon": local_coords[0],
+            "lat": local_coords[1],
+            "place": place
+        }
+
+    # Sinon, utiliser l'API OpenRoute
+    if openroute_service and openroute_service.is_configured():
+        coords = await openroute_service.geocode(place)
+        if coords:
+            return {
+                "found": True,
+                "source": "openroute",
+                "lon": coords[0],
+                "lat": coords[1],
+                "place": place
+            }
+
+    return {"found": False, "place": place}
+
+
+@app.post("/api/openroute/route")
+async def openroute_calculate_route(trip: TripInput):
+    """
+    Calcule un itinéraire précis via OpenRouteService.
+
+    Args:
+        trip: Informations du trajet (origin, destination)
+
+    Returns:
+        Distance et durée précises
+    """
+    origin = trip.origin
+    destination = trip.destination
+
+    # Essayer d'abord avec OpenRouteService si configuré
+    if openroute_service and openroute_service.is_configured():
+        route = await openroute_service.calculate_route_by_names(origin, destination)
+
+        if route:
+            # Ajouter le facteur de trafic
+            from backend.distance_calculator import estimate_traffic_factor, get_week_type
+
+            traffic_factor, traffic_desc = estimate_traffic_factor(
+                trip.day_of_week, trip.hour, trip.is_holiday, trip.is_summer
+            )
+
+            adjusted_duration = route.duration_hours * traffic_factor
+            adj_hours = int(adjusted_duration)
+            adj_minutes = int((adjusted_duration - adj_hours) * 60)
+
+            return {
+                "source": "openroute",
+                "distance_km": route.distance_km,
+                "duration_hours": route.duration_hours,
+                "duration_formatted": route.duration_formatted,
+                "traffic_factor": traffic_factor,
+                "traffic_description": traffic_desc,
+                "adjusted_duration_hours": round(adjusted_duration, 2),
+                "adjusted_duration_formatted": f"{adj_hours}h{adj_minutes:02d}",
+                "week_type": get_week_type(trip.is_holiday, trip.is_summer),
+                "origin": {"name": origin, "lon": route.origin_coords[0], "lat": route.origin_coords[1]},
+                "destination": {"name": destination, "lon": route.destination_coords[0], "lat": route.destination_coords[1]}
+            }
+
+    # Fallback sur le calculateur local
+    result = trip_calculator.calculate_trip(
+        origin=origin,
+        destination=destination,
+        day_of_week=trip.day_of_week,
+        hour=trip.hour,
+        is_holiday=trip.is_holiday,
+        is_summer=trip.is_summer
+    )
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    result["source"] = "local"
+    return result
+
+
+@app.post("/api/trip/calculate-enhanced")
+async def calculate_trip_enhanced(trip: TripInput):
+    """
+    Calcule un trajet avec OpenRouteService si disponible, sinon fallback local.
+
+    Combine les avantages de l'API externe (précision) et du calcul local (rapidité).
+    """
+    # Essayer OpenRouteService en premier
+    if openroute_service and openroute_service.is_configured():
+        try:
+            return await openroute_calculate_route(trip)
+        except Exception as e:
+            print(f"Erreur OpenRoute, fallback local: {e}")
+
+    # Fallback local
+    result = trip_calculator.calculate_trip(
+        origin=trip.origin,
+        destination=trip.destination,
+        day_of_week=trip.day_of_week,
+        hour=trip.hour,
+        is_holiday=trip.is_holiday,
+        is_summer=trip.is_summer
+    )
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    result["source"] = "local"
+    return result
 
 
 if __name__ == "__main__":

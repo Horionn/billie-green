@@ -103,6 +103,7 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         label {
@@ -129,6 +130,67 @@
         input::placeholder {
             color: #999;
         }
+
+        /* Autocomplete styles */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-list.visible {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+        }
+
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background: #f0fdf4;
+        }
+
+        .autocomplete-item-main {
+            font-size: 14px;
+        }
+
+        .autocomplete-item-sub {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .autocomplete-item-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #e5e5e5;
+            color: #666;
+        }
+
+        .autocomplete-item-badge.eco-a { background: #dcfce7; color: #16a34a; }
+        .autocomplete-item-badge.eco-b { background: #dcfce7; color: #22c55e; }
+        .autocomplete-item-badge.eco-c { background: #fef9c3; color: #ca8a04; }
+        .autocomplete-item-badge.eco-d { background: #ffedd5; color: #ea580c; }
+        .autocomplete-item-badge.eco-e { background: #fee2e2; color: #dc2626; }
 
         .checkbox-group {
             display: flex;
@@ -169,6 +231,23 @@
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+        }
+
+        .vehicle-info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #f0fdf4;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #16a34a;
+        }
+
+        .vehicle-info-badge.unknown {
+            background: #f5f5f5;
+            color: #888;
         }
 
         .results {
@@ -335,6 +414,31 @@
             margin-top: 4px;
         }
 
+        .trip-source {
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .trip-source .api-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .trip-source .local-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #fef9c3;
+            color: #ca8a04;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -365,6 +469,15 @@
             color: #888;
             font-size: 13px;
         }
+
+        /* City input with autocomplete */
+        .city-input-wrapper {
+            position: relative;
+        }
+
+        .city-input-wrapper input {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -380,58 +493,44 @@
         <p class="subtitle">Estimez votre tarif personnalisé selon l'impact carbone et votre profil.</p>
 
         <form id="pricingForm">
+            <!-- TRAJET -->
             <div class="card">
                 <div class="card-title">Trajet</div>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="origin">Départ</label>
-                        <select id="origin" required>
-                            <option value="">Sélectionnez une ville</option>
-                            <option value="Paris">Paris</option>
-                            <option value="Lyon">Lyon</option>
-                            <option value="Marseille">Marseille</option>
-                            <option value="Montpellier">Montpellier</option>
-                            <option value="Nice">Nice</option>
-                            <option value="Grenoble">Grenoble</option>
-                            <option value="Aix-en-Provence">Aix-en-Provence</option>
-                            <option value="Dijon">Dijon</option>
-                            <option value="Valence">Valence</option>
-                            <option value="Avignon">Avignon</option>
-                            <option value="Toulon">Toulon</option>
-                            <option value="Cannes">Cannes</option>
-                        </select>
+                        <div class="city-input-wrapper autocomplete-wrapper">
+                            <input type="text" id="origin" placeholder="Ex: Paris, Lyon..." autocomplete="off" required>
+                            <div class="autocomplete-list" id="originAutocomplete"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="destination">Arrivée</label>
-                        <select id="destination" required>
-                            <option value="">Sélectionnez une ville</option>
-                            <option value="Paris">Paris</option>
-                            <option value="Lyon">Lyon</option>
-                            <option value="Marseille">Marseille</option>
-                            <option value="Montpellier">Montpellier</option>
-                            <option value="Nice">Nice</option>
-                            <option value="Grenoble">Grenoble</option>
-                            <option value="Aix-en-Provence">Aix-en-Provence</option>
-                            <option value="Dijon">Dijon</option>
-                            <option value="Valence">Valence</option>
-                            <option value="Avignon">Avignon</option>
-                            <option value="Toulon">Toulon</option>
-                            <option value="Cannes">Cannes</option>
-                        </select>
+                        <div class="city-input-wrapper autocomplete-wrapper">
+                            <input type="text" id="destination" placeholder="Ex: Marseille, Nice..." autocomplete="off" required>
+                            <div class="autocomplete-list" id="destinationAutocomplete"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- VÉHICULE -->
             <div class="card">
                 <div class="card-title">Véhicule</div>
                 <div class="form-grid form-grid-3">
                     <div class="form-group">
                         <label for="brand">Marque</label>
-                        <input type="text" id="brand" placeholder="Ex: Renault" required>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="brand" placeholder="Ex: Renault" autocomplete="off" required>
+                            <div class="autocomplete-list" id="brandAutocomplete"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="model">Modèle</label>
-                        <input type="text" id="model" placeholder="Ex: Clio" required>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="model" placeholder="Ex: Clio" autocomplete="off" required>
+                            <div class="autocomplete-list" id="modelAutocomplete"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="year">Année</label>
@@ -454,8 +553,10 @@
                         <input type="number" id="argus" placeholder="Estimation du prix du véhicule" min="0">
                     </div>
                 </div>
+                <div id="vehicleInfoBadge"></div>
             </div>
 
+            <!-- OPTIONS -->
             <div class="card">
                 <div class="card-title">Options</div>
                 <div class="form-grid form-grid-4">
@@ -550,45 +651,45 @@
                         <p class="trip-stat-label">CO₂ évité</p>
                     </div>
                 </div>
+                <div class="trip-source" id="tripSource"></div>
             </div>
         </div>
     </main>
 
     <footer>
-        Billie Green — Données émissions : ADEME Car Labelling
+        Billie Green — Données émissions : ADEME Car Labelling | Distances : OpenRouteService
     </footer>
 
     <script>
         const API_BASE = 'http://localhost:8000';
         let apiAvailable = false;
+        let openrouteAvailable = false;
 
-        // Distances réelles complètes (km) - source Google Maps (fallback si API indisponible)
+        // Cache pour les données
+        let brandsCache = [];
+        let modelsCache = {};
+        let selectedVehicleInfo = null;
+
+        // Distances réelles complètes (km) - fallback si API indisponible
         const DISTANCES = {
-            // Paris
             'Paris-Lyon': 462, 'Paris-Marseille': 774, 'Paris-Montpellier': 763,
             'Paris-Nice': 932, 'Paris-Grenoble': 574, 'Paris-Aix-en-Provence': 759,
             'Paris-Dijon': 311, 'Paris-Valence': 560, 'Paris-Avignon': 683,
             'Paris-Toulon': 839, 'Paris-Cannes': 902,
-            // Lyon
             'Lyon-Marseille': 314, 'Lyon-Montpellier': 303, 'Lyon-Nice': 472,
             'Lyon-Grenoble': 111, 'Lyon-Aix-en-Provence': 299, 'Lyon-Valence': 100,
             'Lyon-Avignon': 230, 'Lyon-Toulon': 378, 'Lyon-Cannes': 442, 'Lyon-Dijon': 192,
-            // Marseille
             'Marseille-Montpellier': 169, 'Marseille-Nice': 198, 'Marseille-Grenoble': 306,
             'Marseille-Aix-en-Provence': 31, 'Marseille-Avignon': 99, 'Marseille-Toulon': 66,
             'Marseille-Cannes': 178, 'Marseille-Valence': 215, 'Marseille-Dijon': 506,
-            // Grenoble
             'Grenoble-Nice': 336, 'Grenoble-Montpellier': 295, 'Grenoble-Aix-en-Provence': 290,
             'Grenoble-Avignon': 235, 'Grenoble-Valence': 95, 'Grenoble-Toulon': 350,
             'Grenoble-Cannes': 315, 'Grenoble-Dijon': 299, 'Grenoble-Marseille': 306,
-            // Montpellier
             'Montpellier-Nice': 329, 'Montpellier-Aix-en-Provence': 153,
             'Montpellier-Avignon': 92, 'Montpellier-Toulon': 233, 'Montpellier-Cannes': 303,
             'Montpellier-Valence': 210, 'Montpellier-Dijon': 495, 'Montpellier-Grenoble': 295,
-            // Nice
             'Nice-Aix-en-Provence': 177, 'Nice-Avignon': 256, 'Nice-Toulon': 150,
             'Nice-Cannes': 33, 'Nice-Valence': 374, 'Nice-Dijon': 664,
-            // Autres
             'Dijon-Valence': 292, 'Dijon-Avignon': 422, 'Dijon-Toulon': 570, 'Dijon-Cannes': 634,
             'Dijon-Aix-en-Provence': 490, 'Valence-Avignon': 130, 'Valence-Toulon': 280,
             'Valence-Cannes': 344, 'Valence-Aix-en-Provence': 200, 'Avignon-Toulon': 165,
@@ -596,13 +697,25 @@
             'Toulon-Aix-en-Provence': 84, 'Cannes-Aix-en-Provence': 152
         };
 
+        // Villes connues pour l'autocomplétion locale
+        const KNOWN_CITIES = [
+            'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Montpellier',
+            'Strasbourg', 'Bordeaux', 'Lille', 'Rennes', 'Grenoble', 'Aix-en-Provence',
+            'Dijon', 'Valence', 'Avignon', 'Toulon', 'Cannes', 'Perpignan', 'Narbonne',
+            'Béziers', 'Nîmes', 'Arles', 'Orange', 'Montélimar', 'Vienne', 'Villefranche',
+            'Mâcon', 'Chalon-sur-Saône', 'Beaune', 'Auxerre', 'Fontainebleau', 'Salon-de-Provence'
+        ];
+
         function getDistance(origin, destination) {
             const key1 = `${origin}-${destination}`;
             const key2 = `${destination}-${origin}`;
             return DISTANCES[key1] || DISTANCES[key2] || null;
         }
 
-        // Vérifier si l'API est disponible au chargement
+        // =====================================================================
+        // INITIALISATION
+        // =====================================================================
+
         async function checkApiHealth() {
             try {
                 const response = await fetch(`${API_BASE}/api/health`, {
@@ -612,31 +725,429 @@
                 if (response.ok) {
                     apiAvailable = true;
                     console.log('✓ API Backend connectée');
-                    updateConnectionStatus(true);
+
+                    // Vérifier OpenRouteService
+                    try {
+                        const orsResponse = await fetch(`${API_BASE}/api/openroute/status`);
+                        const orsData = await orsResponse.json();
+                        openrouteAvailable = orsData.configured;
+                        console.log(openrouteAvailable ? '✓ OpenRouteService configuré' : '⚠ OpenRouteService non configuré');
+                    } catch (e) {
+                        openrouteAvailable = false;
+                    }
+
+                    updateConnectionStatus(true, openrouteAvailable);
+
+                    // Charger la liste des marques
+                    loadBrands();
                 }
             } catch (e) {
                 apiAvailable = false;
                 console.log('⚠ API Backend non disponible - Mode local activé');
-                updateConnectionStatus(false);
+                updateConnectionStatus(false, false);
             }
         }
 
-        function updateConnectionStatus(connected) {
+        function updateConnectionStatus(connected, orsConfigured) {
             const tagline = document.querySelector('.tagline');
-            if (connected) {
-                tagline.innerHTML = 'Tarification éco-responsable <span style="color: #16a34a; font-size: 10px;">● API</span>';
+            if (connected && orsConfigured) {
+                tagline.innerHTML = 'Tarification éco-responsable <span style="color: #16a34a; font-size: 10px;">● API + ORS</span>';
+            } else if (connected) {
+                tagline.innerHTML = 'Tarification éco-responsable <span style="color: #22c55e; font-size: 10px;">● API</span>';
             } else {
                 tagline.innerHTML = 'Tarification éco-responsable <span style="color: #f97316; font-size: 10px;">● Local</span>';
             }
         }
 
-        // Appeler l'API Backend
+        async function loadBrands() {
+            try {
+                const response = await fetch(`${API_BASE}/api/brands`);
+                brandsCache = await response.json();
+                console.log(`✓ ${brandsCache.length} marques chargées`);
+            } catch (e) {
+                console.warn('Impossible de charger les marques:', e);
+            }
+        }
+
+        // =====================================================================
+        // AUTOCOMPLÉTION MARQUES
+        // =====================================================================
+
+        const brandInput = document.getElementById('brand');
+        const brandAutocomplete = document.getElementById('brandAutocomplete');
+        let brandSelectedIndex = -1;
+
+        brandInput.addEventListener('input', debounce(async (e) => {
+            const query = e.target.value.trim();
+            if (query.length < 1) {
+                brandAutocomplete.classList.remove('visible');
+                return;
+            }
+
+            let suggestions = [];
+
+            if (apiAvailable) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/vehicle/autocomplete/brands?q=${encodeURIComponent(query)}`);
+                    suggestions = await response.json();
+                } catch (e) {
+                    // Fallback sur le cache local
+                    suggestions = brandsCache.filter(b =>
+                        b.toLowerCase().includes(query.toLowerCase())
+                    ).slice(0, 10);
+                }
+            } else {
+                suggestions = brandsCache.filter(b =>
+                    b.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 10);
+            }
+
+            displayBrandSuggestions(suggestions);
+        }, 150));
+
+        function displayBrandSuggestions(suggestions) {
+            if (suggestions.length === 0) {
+                brandAutocomplete.classList.remove('visible');
+                return;
+            }
+
+            brandAutocomplete.innerHTML = suggestions.map((brand, i) => `
+                <div class="autocomplete-item" data-index="${i}" data-value="${brand}">
+                    <span class="autocomplete-item-main">${brand}</span>
+                </div>
+            `).join('');
+
+            brandAutocomplete.classList.add('visible');
+            brandSelectedIndex = -1;
+
+            // Événements de clic
+            brandAutocomplete.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    brandInput.value = item.dataset.value;
+                    brandAutocomplete.classList.remove('visible');
+                    // Charger les modèles pour cette marque
+                    loadModelsForBrand(item.dataset.value);
+                    document.getElementById('model').focus();
+                });
+            });
+        }
+
+        brandInput.addEventListener('keydown', (e) => {
+            handleAutocompleteKeydown(e, brandAutocomplete, brandSelectedIndex, (newIndex) => {
+                brandSelectedIndex = newIndex;
+            }, (value) => {
+                brandInput.value = value;
+                loadModelsForBrand(value);
+                document.getElementById('model').focus();
+            });
+        });
+
+        brandInput.addEventListener('blur', () => {
+            setTimeout(() => brandAutocomplete.classList.remove('visible'), 200);
+        });
+
+        // =====================================================================
+        // AUTOCOMPLÉTION MODÈLES
+        // =====================================================================
+
+        const modelInput = document.getElementById('model');
+        const modelAutocomplete = document.getElementById('modelAutocomplete');
+        let modelSelectedIndex = -1;
+
+        async function loadModelsForBrand(brand) {
+            if (!apiAvailable || !brand) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/vehicle/autocomplete/models?brand=${encodeURIComponent(brand)}`);
+                modelsCache[brand] = await response.json();
+                console.log(`✓ ${modelsCache[brand].length} modèles chargés pour ${brand}`);
+            } catch (e) {
+                console.warn('Impossible de charger les modèles:', e);
+            }
+        }
+
+        modelInput.addEventListener('input', debounce(async (e) => {
+            const query = e.target.value.trim();
+            const brand = brandInput.value.trim().toUpperCase();
+
+            if (!brand) {
+                modelAutocomplete.classList.remove('visible');
+                return;
+            }
+
+            let suggestions = [];
+
+            if (apiAvailable) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/vehicle/autocomplete/models?brand=${encodeURIComponent(brand)}&q=${encodeURIComponent(query)}`);
+                    suggestions = await response.json();
+                } catch (e) {
+                    suggestions = modelsCache[brand] || [];
+                }
+            } else {
+                suggestions = (modelsCache[brand] || []).filter(m =>
+                    m.model.toLowerCase().includes(query.toLowerCase())
+                );
+            }
+
+            displayModelSuggestions(suggestions);
+        }, 150));
+
+        modelInput.addEventListener('focus', async () => {
+            const brand = brandInput.value.trim().toUpperCase();
+            if (brand && apiAvailable) {
+                if (!modelsCache[brand]) {
+                    await loadModelsForBrand(brand);
+                }
+                if (modelsCache[brand] && modelsCache[brand].length > 0) {
+                    displayModelSuggestions(modelsCache[brand].slice(0, 15));
+                }
+            }
+        });
+
+        function displayModelSuggestions(suggestions) {
+            if (suggestions.length === 0) {
+                modelAutocomplete.classList.remove('visible');
+                return;
+            }
+
+            modelAutocomplete.innerHTML = suggestions.map((item, i) => {
+                const co2 = item.co2_g_km || 150;
+                const ecoClass = co2 === 0 ? 'eco-a' : co2 <= 100 ? 'eco-a' : co2 <= 120 ? 'eco-b' : co2 <= 150 ? 'eco-c' : co2 <= 200 ? 'eco-d' : 'eco-e';
+                const co2Label = co2 === 0 ? 'Électrique' : `${Math.round(co2)} g/km`;
+
+                return `
+                    <div class="autocomplete-item" data-index="${i}" data-model="${item.model}" data-co2="${co2}" data-energy="${item.energie || ''}">
+                        <div>
+                            <div class="autocomplete-item-main">${item.model}</div>
+                            <div class="autocomplete-item-sub">${item.energie || 'Type inconnu'}</div>
+                        </div>
+                        <span class="autocomplete-item-badge ${ecoClass}">${co2Label}</span>
+                    </div>
+                `;
+            }).join('');
+
+            modelAutocomplete.classList.add('visible');
+            modelSelectedIndex = -1;
+
+            // Événements de clic
+            modelAutocomplete.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    modelInput.value = item.dataset.model;
+                    modelAutocomplete.classList.remove('visible');
+
+                    // Mettre à jour les infos du véhicule
+                    selectedVehicleInfo = {
+                        co2_g_km: parseFloat(item.dataset.co2),
+                        energie: item.dataset.energy
+                    };
+                    updateVehicleInfoBadge(selectedVehicleInfo);
+
+                    // Auto-sélectionner le type d'énergie
+                    const energy = item.dataset.energy.toUpperCase();
+                    if (energy.includes('ELEC') && !energy.includes('ESS') && !energy.includes('GAZ')) {
+                        document.getElementById('energy').value = 'ELECTRIQUE';
+                    } else if (energy.includes('ELEC')) {
+                        document.getElementById('energy').value = 'HYBRIDE';
+                    } else if (energy.includes('GAZOLE') || energy.includes('DIESEL')) {
+                        document.getElementById('energy').value = 'DIESEL';
+                    } else if (energy.includes('ESSENCE')) {
+                        document.getElementById('energy').value = 'ESSENCE';
+                    }
+                });
+            });
+        }
+
+        modelInput.addEventListener('keydown', (e) => {
+            handleAutocompleteKeydown(e, modelAutocomplete, modelSelectedIndex, (newIndex) => {
+                modelSelectedIndex = newIndex;
+            }, (value, item) => {
+                modelInput.value = value;
+                if (item) {
+                    selectedVehicleInfo = {
+                        co2_g_km: parseFloat(item.dataset.co2),
+                        energie: item.dataset.energy
+                    };
+                    updateVehicleInfoBadge(selectedVehicleInfo);
+                }
+            });
+        });
+
+        modelInput.addEventListener('blur', () => {
+            setTimeout(() => modelAutocomplete.classList.remove('visible'), 200);
+        });
+
+        function updateVehicleInfoBadge(info) {
+            const container = document.getElementById('vehicleInfoBadge');
+            if (!info || !info.co2_g_km) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const co2 = info.co2_g_km;
+            const isElectric = co2 === 0;
+            const category = co2 === 0 ? 'A' : co2 <= 100 ? 'A' : co2 <= 120 ? 'B' : co2 <= 140 ? 'C' : co2 <= 160 ? 'D' : 'E';
+
+            container.innerHTML = `
+                <div class="vehicle-info-badge">
+                    <span style="font-weight: 600;">Catégorie ${category}</span>
+                    <span>•</span>
+                    <span>${isElectric ? '0 émission' : `${Math.round(co2)} g CO₂/km`}</span>
+                    <span>•</span>
+                    <span>${info.energie || 'Type inconnu'}</span>
+                </div>
+            `;
+        }
+
+        // =====================================================================
+        // AUTOCOMPLÉTION VILLES (OpenRouteService)
+        // =====================================================================
+
+        function setupCityAutocomplete(inputId, autocompleteId) {
+            const input = document.getElementById(inputId);
+            const autocomplete = document.getElementById(autocompleteId);
+            let selectedIndex = -1;
+
+            input.addEventListener('input', debounce(async (e) => {
+                const query = e.target.value.trim();
+                if (query.length < 2) {
+                    autocomplete.classList.remove('visible');
+                    return;
+                }
+
+                let suggestions = [];
+
+                // Essayer d'abord l'API OpenRoute
+                if (apiAvailable) {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/openroute/autocomplete?q=${encodeURIComponent(query)}`);
+                        suggestions = await response.json();
+                    } catch (e) {
+                        console.warn('Erreur autocomplétion ville:', e);
+                    }
+                }
+
+                // Fallback sur les villes connues
+                if (suggestions.length === 0) {
+                    suggestions = KNOWN_CITIES
+                        .filter(c => c.toLowerCase().includes(query.toLowerCase()))
+                        .map(c => ({ name: c, label: `${c}, France` }))
+                        .slice(0, 5);
+                }
+
+                displayCitySuggestions(autocomplete, suggestions, (value) => {
+                    input.value = value;
+                    autocomplete.classList.remove('visible');
+                });
+            }, 200));
+
+            input.addEventListener('keydown', (e) => {
+                handleAutocompleteKeydown(e, autocomplete, selectedIndex, (newIndex) => {
+                    selectedIndex = newIndex;
+                }, (value) => {
+                    input.value = value;
+                });
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => autocomplete.classList.remove('visible'), 200);
+            });
+
+            input.addEventListener('focus', () => {
+                const query = input.value.trim();
+                if (query.length >= 2) {
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
+        function displayCitySuggestions(container, suggestions, onSelect) {
+            if (suggestions.length === 0) {
+                container.classList.remove('visible');
+                return;
+            }
+
+            container.innerHTML = suggestions.map((item, i) => `
+                <div class="autocomplete-item" data-index="${i}" data-value="${item.name}">
+                    <div>
+                        <div class="autocomplete-item-main">${item.name}</div>
+                        <div class="autocomplete-item-sub">${item.region || ''} ${item.country || 'France'}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.classList.add('visible');
+
+            container.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    onSelect(item.dataset.value);
+                });
+            });
+        }
+
+        // Initialiser les autocomplete pour les villes
+        setupCityAutocomplete('origin', 'originAutocomplete');
+        setupCityAutocomplete('destination', 'destinationAutocomplete');
+
+        // =====================================================================
+        // UTILITAIRES
+        // =====================================================================
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function handleAutocompleteKeydown(e, container, selectedIndex, setIndex, onSelect) {
+            const items = container.querySelectorAll('.autocomplete-item');
+            if (!container.classList.contains('visible') || items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const newIndex = Math.min(selectedIndex + 1, items.length - 1);
+                setIndex(newIndex);
+                updateAutocompleteSelection(container, newIndex);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const newIndex = Math.max(selectedIndex - 1, 0);
+                setIndex(newIndex);
+                updateAutocompleteSelection(container, newIndex);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                    const item = items[selectedIndex];
+                    const value = item.dataset.value || item.dataset.model;
+                    onSelect(value, item);
+                    container.classList.remove('visible');
+                }
+            } else if (e.key === 'Escape') {
+                container.classList.remove('visible');
+            }
+        }
+
+        function updateAutocompleteSelection(container, index) {
+            container.querySelectorAll('.autocomplete-item').forEach((item, i) => {
+                item.classList.toggle('selected', i === index);
+            });
+        }
+
+        // =====================================================================
+        // SOUMISSION DU FORMULAIRE
+        // =====================================================================
+
         async function callApi(formData) {
             const response = await fetch(`${API_BASE}/api/pricing/calculate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
-                signal: AbortSignal.timeout(10000)
+                signal: AbortSignal.timeout(15000)
             });
 
             if (!response.ok) {
@@ -679,7 +1190,6 @@
             document.getElementById('submitBtn').disabled = true;
 
             try {
-                // Essayer l'API d'abord si disponible
                 if (apiAvailable) {
                     try {
                         const apiResult = await callApi(formData);
@@ -690,7 +1200,6 @@
                         displayLocalResults(formData);
                     }
                 } else {
-                    // Sinon calcul local
                     displayLocalResults(formData);
                 }
             } catch (error) {
@@ -702,7 +1211,10 @@
             document.getElementById('submitBtn').disabled = false;
         });
 
-        // Afficher les résultats de l'API
+        // =====================================================================
+        // AFFICHAGE DES RÉSULTATS
+        // =====================================================================
+
         function displayApiResults(data, passengers) {
             document.getElementById('results').classList.add('visible');
             document.getElementById('finalPrice').textContent = Math.round(data.final_price);
@@ -764,63 +1276,13 @@
             const co2Saved = (co2PerKm * tripInfo.distance_km / 1000) * (1 - 1/passengers);
             document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
 
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Initialiser au chargement
-        checkApiHealth();
-
-        function displayResults(data, passengers) {
-            document.getElementById('results').classList.add('visible');
-            document.getElementById('finalPrice').textContent = data.final_price.toFixed(0);
-
-            const ecoPercent = data.eco_score * 100;
-            document.getElementById('ecoScoreBar').style.width = `${ecoPercent}%`;
-            document.getElementById('ecoScoreText').textContent =
-                ecoPercent > 70 ? 'Faibles émissions' :
-                ecoPercent > 40 ? 'Émissions modérées' : 'Émissions élevées';
-
-            const badge = document.getElementById('co2Badge');
-            badge.textContent = data.co2_category;
-            badge.style.background = data.co2_color;
-            badge.style.color = 'white';
-
-            const socialPercent = data.social_score * 100;
-            document.getElementById('socialScoreBar').style.width = `${socialPercent}%`;
-            const socialLabel = document.getElementById('socialLabel');
-            if (socialPercent > 60) {
-                socialLabel.textContent = 'Élevée';
-                socialLabel.style.background = '#fef3c7';
-                socialLabel.style.color = '#d97706';
-            } else if (socialPercent > 30) {
-                socialLabel.textContent = 'Moyenne';
-                socialLabel.style.background = '#e5e5e5';
-                socialLabel.style.color = '#666';
+            // Source du calcul de distance
+            const tripSource = document.getElementById('tripSource');
+            if (tripInfo.source === 'openroute') {
+                tripSource.innerHTML = 'Distance calculée via <span class="api-badge">OpenRouteService</span>';
             } else {
-                socialLabel.textContent = 'Protégée';
-                socialLabel.style.background = '#dcfce7';
-                socialLabel.style.color = '#16a34a';
+                tripSource.innerHTML = 'Distance calculée en <span class="local-badge">mode local</span>';
             }
-            document.getElementById('socialScoreText').textContent =
-                socialPercent > 60 ? 'Contribution normale' :
-                socialPercent > 30 ? 'Contribution modérée' : 'Malus écologique atténué';
-
-            const list = document.getElementById('breakdownList');
-            list.innerHTML = data.breakdown.map(item => `
-                <div class="breakdown-item">
-                    <div>
-                        <div class="breakdown-label">${item.label}</div>
-                        <div class="breakdown-detail">${item.detail}</div>
-                    </div>
-                    <div class="breakdown-value ${item.value.startsWith('-') ? 'positive' : item.value.startsWith('+') ? 'negative' : ''}">${item.value}</div>
-                </div>
-            `).join('');
-
-            document.getElementById('tripDistance').textContent = data.trip_info.distance_km;
-            document.getElementById('tripDuration').textContent = data.trip_info.adjusted_duration_formatted;
-            const co2PerKm = data.vehicle_info.co2_g_km || 150;
-            const co2Saved = (co2PerKm * data.trip_info.distance_km / 1000) * (1 - 1/passengers);
-            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
 
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
@@ -837,27 +1299,23 @@
             let basePrice = distance * 0.15;
             basePrice = Math.max(basePrice, 20);
 
-            // Score écologique basé sur le type d'énergie
-            // 0 = très polluant, 1 = propre
+            // Score écologique
             const energyScores = {
                 'ELECTRIQUE': 0.95,
                 'HYBRIDE': 0.65,
                 'ESSENCE': 0.4,
                 'DIESEL': 0.35,
-                '': 0.35  // Par défaut = diesel (le plus courant pour les trajets longue distance)
+                '': 0.35
             };
 
-            // Détection automatique des véhicules électriques connus
             const electricModels = ['MODEL 3', 'MODEL S', 'MODEL X', 'MODEL Y', 'ZOE', 'E-TRON', 'ID.3', 'ID.4', 'LEAF', 'KONA ELECTRIC', 'E-208', 'SPRING'];
             const isElectric = formData.vehicle.energy === 'ELECTRIQUE' ||
                                electricModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
 
-            // Détection automatique des SUV/gros véhicules diesel
             const dieselModels = ['X5', 'X6', 'X7', 'Q5', 'Q7', 'Q8', 'GLC', 'GLE', 'GLS', 'CAYENNE', 'MACAN', 'TOUAREG', 'TIGUAN', '3008', '5008', 'KOLEOS', 'KADJAR'];
             const isDiesel = formData.vehicle.energy === 'DIESEL' ||
                             dieselModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
 
-            // Calcul du score écologique
             let ecoScore;
             if (isElectric) {
                 ecoScore = 0.95;
@@ -866,51 +1324,36 @@
             } else if (formData.vehicle.energy) {
                 ecoScore = energyScores[formData.vehicle.energy] || 0.35;
             } else {
-                // Par défaut, on considère diesel (conservateur pour le malus)
                 ecoScore = 0.35;
             }
 
-            // Capacité contributive basée sur la valeur ARGUS
-            // Plus la voiture est chère, plus la capacité est élevée
             const argus = formData.vehicle.argus_value || 10000;
-            const socialScore = Math.min(argus / 35000, 1); // 35k€ = capacité max
-
-            // NOUVELLE LOGIQUE ÉTHIQUE:
-            // Malus écologique = pollution × capacité à payer
-            // - Voiture chère + polluante = GROS malus
-            // - Voiture pas chère + polluante = PAS de malus (on protège)
-            // - Voiture propre = bonus (quelle que soit la valeur)
+            const socialScore = Math.min(argus / 35000, 1);
 
             let adjustment = 0;
             let adjustmentLabel = '';
             let adjustmentDetail = '';
 
             if (ecoScore >= 0.7) {
-                // Véhicule propre → bonus
-                adjustment = -0.12; // -12%
+                adjustment = -0.12;
                 adjustmentLabel = 'Bonus écologique';
                 adjustmentDetail = 'Véhicule à faibles émissions';
             } else if (ecoScore < 0.45) {
-                // Véhicule polluant → malus proportionnel à la capacité
                 if (socialScore > 0.6) {
-                    // Voiture chère et polluante → gros malus
-                    adjustment = 0.15; // +15%
+                    adjustment = 0.15;
                     adjustmentLabel = 'Contribution écologique';
                     adjustmentDetail = 'Véhicule polluant, capacité contributive élevée';
                 } else if (socialScore > 0.3) {
-                    // Voiture moyenne et polluante → petit malus
-                    adjustment = 0.05; // +5%
+                    adjustment = 0.05;
                     adjustmentLabel = 'Contribution écologique';
                     adjustmentDetail = 'Véhicule polluant, capacité contributive moyenne';
                 } else {
-                    // Voiture pas chère et polluante → PAS de malus
                     adjustment = 0;
                     adjustmentLabel = 'Malus exonéré';
                     adjustmentDetail = 'Capacité contributive limitée';
                 }
             }
 
-            // Bonus covoiturage
             const passengerBonus = (formData.passengers - 1) * 0.05;
             const finalPrice = basePrice * (1 + adjustment) * (1 - passengerBonus);
 
@@ -918,11 +1361,9 @@
             document.getElementById('results').classList.add('visible');
             document.getElementById('finalPrice').textContent = Math.round(finalPrice);
 
-            // Score bars
             document.getElementById('ecoScoreBar').style.width = `${ecoScore * 100}%`;
             document.getElementById('socialScoreBar').style.width = `${socialScore * 100}%`;
 
-            // CO2 Badge
             const badge = document.getElementById('co2Badge');
             if (ecoScore > 0.8) { badge.textContent = 'A'; badge.style.background = '#16a34a'; }
             else if (ecoScore > 0.6) { badge.textContent = 'B'; badge.style.background = '#22c55e'; }
@@ -931,7 +1372,6 @@
             else { badge.textContent = 'E'; badge.style.background = '#ef4444'; }
             badge.style.color = 'white';
 
-            // Social label
             const socialLabel = document.getElementById('socialLabel');
             if (socialScore > 0.6) {
                 socialLabel.textContent = 'Élevée';
@@ -955,7 +1395,6 @@
                 socialScore > 0.6 ? 'Contribution normale applicable' :
                 socialScore > 0.3 ? 'Contribution modérée' : 'Malus écologique exonéré';
 
-            // Breakdown
             const breakdown = [
                 { label: 'Prix de base', detail: `${distance} km × 0,15 €/km`, value: `${basePrice.toFixed(2)} €` }
             ];
@@ -998,7 +1437,6 @@
                 </div>
             `).join('');
 
-            // Trip info
             const hours = Math.floor(distance / 110);
             const minutes = Math.round((distance / 110 - hours) * 60);
             document.getElementById('tripDistance').textContent = distance;
@@ -1008,10 +1446,19 @@
             const co2Saved = (co2PerKm * distance / 1000) * (1 - 1/formData.passengers);
             document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
 
+            document.getElementById('tripSource').innerHTML = 'Distance calculée en <span class="local-badge">mode local</span>';
+
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Set current day
+        // =====================================================================
+        // INITIALISATION
+        // =====================================================================
+
+        // Vérifier l'API au chargement
+        checkApiHealth();
+
+        // Définir le jour actuel
         document.getElementById('dayOfWeek').value = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
     </script>
 </body>
