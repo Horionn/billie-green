@@ -505,7 +505,7 @@
                 <div class="price-display">
                     <span class="price-value" id="finalPrice">--</span>
                     <span class="price-currency">€</span>
-                    <p class="price-label" id="priceLabel">Tarif estimé</p>
+                    <p class="price-label" id="priceLabel">par personne</p>
                 </div>
 
                 <div class="scores-grid">
@@ -632,6 +632,9 @@
             document.getElementById('results').classList.remove('visible');
             document.getElementById('submitBtn').disabled = true;
 
+            // Toujours utiliser le calcul local pour éviter les erreurs API
+            displayLocalResults(formData);
+            /*
             try {
                 const response = await fetch(`${API_BASE}/api/pricing/calculate`, {
                     method: 'POST',
@@ -645,7 +648,9 @@
             } catch (error) {
                 console.log('API indisponible, calcul local');
                 displayLocalResults(formData);
-            } finally {
+            }
+            */
+            finally {
                 document.getElementById('loading').classList.remove('visible');
                 document.getElementById('submitBtn').disabled = false;
             }
@@ -727,7 +732,13 @@
                 'DIESEL': 0.35,
                 '': 0.45
             };
-            const ecoScore = energyScores[formData.vehicle.energy || ''] || 0.45;
+
+            // Détection automatique des véhicules électriques connus
+            const electricModels = ['MODEL 3', 'MODEL S', 'MODEL X', 'MODEL Y', 'ZOE', 'E-TRON', 'ID.3', 'ID.4', 'LEAF', 'KONA ELECTRIC', 'E-208', 'SPRING'];
+            const isElectric = formData.vehicle.energy === 'ELECTRIQUE' ||
+                               electricModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
+
+            const ecoScore = isElectric ? 0.95 : (energyScores[formData.vehicle.energy || ''] || 0.45);
 
             // Capacité contributive basée sur la valeur ARGUS
             // Plus la voiture est chère, plus la capacité est élevée

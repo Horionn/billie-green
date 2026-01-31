@@ -160,12 +160,22 @@ class VehicleDatabase:
             row = subset.iloc[0].copy()
             row['CO2_moyen'] = subset['CO2_moyen'].mean()
 
+        # Gérer le CO2 pour les véhicules électriques (nan ou 0)
+        co2_value = row.get('CO2_moyen', 150)
+        energie = row.get('Energie', 'INCONNU')
+        if pd.isna(co2_value) or co2_value == 0:
+            # Véhicule électrique = 0 émissions
+            if 'ELEC' in str(energie).upper():
+                co2_value = 0
+            else:
+                co2_value = 150  # Valeur par défaut
+
         return {
             'marque': row.get('Marque', brand),
             'modele': row.get('Modèle', model),
             'description': row.get('Description Commerciale', ''),
-            'energie': row.get('Energie', 'INCONNU'),
-            'co2_g_km': float(row.get('CO2_moyen', 150)),  # Défaut: 150g/km
+            'energie': energie,
+            'co2_g_km': float(co2_value),
             'puissance_fiscale': int(row.get('Puissance fiscale', 0)) if pd.notna(row.get('Puissance fiscale')) else 0,
             'poids': float(row.get('Poids à vide', 0)) if pd.notna(row.get('Poids à vide')) else 0,
             'prix_neuf': float(row.get('Prix véhicule', 0)) if pd.notna(row.get('Prix véhicule')) else 0,
