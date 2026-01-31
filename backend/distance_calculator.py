@@ -63,24 +63,74 @@ CITIES_DB = {
 }
 
 # Distances autoroutières réelles (en km) pour les trajets principaux
-# Source: données de l'étude Symone
+# Source: données de l'étude Symone + Google Maps
 HIGHWAY_DISTANCES = {
+    # Paris - destinations
     ("paris", "lyon"): 462,
     ("paris", "marseille"): 774,
     ("paris", "aix"): 759,
     ("paris", "montpellier"): 763,
+    ("paris", "nice"): 932,
+    ("paris", "grenoble"): 574,
+    ("paris", "dijon"): 311,
+    ("paris", "valence"): 560,
+    ("paris", "avignon"): 683,
+    ("paris", "toulon"): 839,
+    ("paris", "cannes"): 902,
+
+    # Lyon - destinations
     ("lyon", "marseille"): 314,
     ("lyon", "aix"): 299,
     ("lyon", "montpellier"): 303,
-    ("marseille", "montpellier"): 169,
-    ("paris", "dijon"): 311,
-    ("dijon", "lyon"): 192,
+    ("lyon", "nice"): 472,
+    ("lyon", "grenoble"): 111,
     ("lyon", "valence"): 100,
+    ("lyon", "avignon"): 230,
+    ("lyon", "toulon"): 378,
+    ("lyon", "cannes"): 442,
+    ("lyon", "dijon"): 192,
+
+    # Marseille - destinations
+    ("marseille", "montpellier"): 169,
+    ("marseille", "nice"): 198,
+    ("marseille", "grenoble"): 306,
+    ("marseille", "aix"): 31,
+    ("marseille", "avignon"): 99,
+    ("marseille", "toulon"): 66,
+    ("marseille", "cannes"): 178,
+    ("marseille", "valence"): 215,
+
+    # Grenoble - destinations
+    ("grenoble", "nice"): 336,
+    ("grenoble", "montpellier"): 295,
+    ("grenoble", "aix"): 290,
+    ("grenoble", "avignon"): 235,
+    ("grenoble", "valence"): 95,
+    ("grenoble", "toulon"): 350,
+    ("grenoble", "cannes"): 315,
+    ("grenoble", "dijon"): 299,
+
+    # Montpellier - destinations
+    ("montpellier", "nice"): 329,
+    ("montpellier", "aix"): 153,
+    ("montpellier", "avignon"): 92,
+    ("montpellier", "toulon"): 233,
+    ("montpellier", "cannes"): 303,
+    ("montpellier", "valence"): 210,
+
+    # Nice - destinations
+    ("nice", "aix"): 177,
+    ("nice", "avignon"): 256,
+    ("nice", "toulon"): 150,
+    ("nice", "cannes"): 33,
+    ("nice", "valence"): 374,
+
+    # Autres
+    ("dijon", "lyon"): 192,
     ("valence", "orange"): 90,
     ("orange", "marseille"): 95,
-    ("paris", "nice"): 932,
-    ("lyon", "nice"): 472,
-    ("marseille", "nice"): 198,
+    ("avignon", "aix"): 82,
+    ("toulon", "cannes"): 123,
 }
 
 
