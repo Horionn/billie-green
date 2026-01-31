@@ -560,8 +560,9 @@
 
     <script>
         const API_BASE = 'http://localhost:8000';
+        let apiAvailable = false;
 
-        // Distances réelles complètes (km) - source Google Maps
+        // Distances réelles complètes (km) - source Google Maps (fallback si API indisponible)
         const DISTANCES = {
             // Paris
             'Paris-Lyon': 462, 'Paris-Marseille': 774, 'Paris-Montpellier': 763,
@@ -601,6 +602,51 @@
             return DISTANCES[key1] || DISTANCES[key2] || null;
         }
 
+        // Vérifier si l'API est disponible au chargement
+        async function checkApiHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/api/health`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000)
+                });
+                if (response.ok) {
+                    apiAvailable = true;
+                    console.log('✓ API Backend connectée');
+                    updateConnectionStatus(true);
+                }
+            } catch (e) {
+                apiAvailable = false;
+                console.log('⚠ API Backend non disponible - Mode local activé');
+                updateConnectionStatus(false);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const tagline = document.querySelector('.tagline');
+            if (connected) {
+                tagline.innerHTML = 'Tarification éco-responsable <span style="color: #16a34a; font-size: 10px;">● API</span>';
+            } else {
+                tagline.innerHTML = 'Tarification éco-responsable <span style="color: #f97316; font-size: 10px;">● Local</span>';
+            }
+        }
+
+        // Appeler l'API Backend
+        async function callApi(formData) {
+            const response = await fetch(`${API_BASE}/api/pricing/calculate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+                signal: AbortSignal.timeout(10000)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Erreur API');
+            }
+
+            return await response.json();
+        }
+
         document.getElementById('pricingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -632,12 +678,97 @@
             document.getElementById('results').classList.remove('visible');
             document.getElementById('submitBtn').disabled = true;
 
-            // Calcul local
-            displayLocalResults(formData);
+            try {
+                // Essayer l'API d'abord si disponible
+                if (apiAvailable) {
+                    try {
+                        const apiResult = await callApi(formData);
+                        displayApiResults(apiResult, formData.passengers);
+                        console.log('✓ Résultat via API Backend');
+                    } catch (apiError) {
+                        console.warn('API error, fallback to local:', apiError);
+                        displayLocalResults(formData);
+                    }
+                } else {
+                    // Sinon calcul local
+                    displayLocalResults(formData);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du calcul: ' + error.message);
+            }
 
             document.getElementById('loading').classList.remove('visible');
             document.getElementById('submitBtn').disabled = false;
         });
+
+        // Afficher les résultats de l'API
+        function displayApiResults(data, passengers) {
+            document.getElementById('results').classList.add('visible');
+            document.getElementById('finalPrice').textContent = Math.round(data.final_price);
+
+            // Score bars
+            document.getElementById('ecoScoreBar').style.width = `${data.eco_score * 100}%`;
+            document.getElementById('socialScoreBar').style.width = `${data.social_score * 100}%`;
+
+            // CO2 Badge
+            const badge = document.getElementById('co2Badge');
+            badge.textContent = data.co2_category;
+            badge.style.background = data.co2_color;
+            badge.style.color = 'white';
+
+            // Eco score text
+            document.getElementById('ecoScoreText').textContent =
+                data.eco_score > 0.7 ? 'Faibles émissions' :
+                data.eco_score > 0.4 ? 'Émissions modérées' : 'Émissions élevées';
+
+            // Social label
+            const socialLabel = document.getElementById('socialLabel');
+            if (data.social_score > 0.6) {
+                socialLabel.textContent = 'Élevée';
+                socialLabel.style.background = '#fef3c7';
+                socialLabel.style.color = '#d97706';
+            } else if (data.social_score > 0.3) {
+                socialLabel.textContent = 'Moyenne';
+                socialLabel.style.background = '#e5e5e5';
+                socialLabel.style.color = '#666';
+            } else {
+                socialLabel.textContent = 'Protégée';
+                socialLabel.style.background = '#dcfce7';
+                socialLabel.style.color = '#16a34a';
+            }
+
+            document.getElementById('socialScoreText').textContent =
+                data.social_score > 0.6 ? 'Contribution normale applicable' :
+                data.social_score > 0.3 ? 'Contribution modérée' : 'Malus écologique exonéré';
+
+            // Breakdown
+            document.getElementById('breakdownList').innerHTML = data.breakdown.map(item => `
+                <div class="breakdown-item">
+                    <div>
+                        <div class="breakdown-label">${item.label}</div>
+                        <div class="breakdown-detail">${item.detail}</div>
+                    </div>
+                    <div class="breakdown-value ${item.value.startsWith('-') ? 'positive' : item.value.startsWith('+') ? 'negative' : ''}">${item.value}</div>
+                </div>
+            `).join('');
+
+            // Trip info
+            const tripInfo = data.trip_info;
+            document.getElementById('tripDistance').textContent = tripInfo.distance_km;
+            document.getElementById('tripDuration').textContent = tripInfo.adjusted_duration_formatted ||
+                `${Math.floor(tripInfo.distance_km / 110)}h${String(Math.round((tripInfo.distance_km / 110 % 1) * 60)).padStart(2, '0')}`;
+
+            // CO2 saved
+            const co2PerKm = data.vehicle_info.co2_g_km || (data.eco_score > 0.8 ? 0 : data.eco_score > 0.6 ? 80 : 150);
+            const co2Saved = (co2PerKm * tripInfo.distance_km / 1000) * (1 - 1/passengers);
+            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialiser au chargement
+        checkApiHealth();
 
         function displayResults(data, passengers) {
             document.getElementById('results').classList.add('visible');
@@ -713,7 +844,7 @@
                 'HYBRIDE': 0.65,
                 'ESSENCE': 0.4,
                 'DIESEL': 0.35,
-                '': 0.45
+                '': 0.35  // Par défaut = diesel (le plus courant pour les trajets longue distance)
             };
 
             // Détection automatique des véhicules électriques connus
@@ -721,7 +852,23 @@
             const isElectric = formData.vehicle.energy === 'ELECTRIQUE' ||
                                electricModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
 
-            const ecoScore = isElectric ? 0.95 : (energyScores[formData.vehicle.energy || ''] || 0.45);
+            // Détection automatique des SUV/gros véhicules diesel
+            const dieselModels = ['X5', 'X6', 'X7', 'Q5', 'Q7', 'Q8', 'GLC', 'GLE', 'GLS', 'CAYENNE', 'MACAN', 'TOUAREG', 'TIGUAN', '3008', '5008', 'KOLEOS', 'KADJAR'];
+            const isDiesel = formData.vehicle.energy === 'DIESEL' ||
+                            dieselModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
+
+            // Calcul du score écologique
+            let ecoScore;
+            if (isElectric) {
+                ecoScore = 0.95;
+            } else if (isDiesel) {
+                ecoScore = 0.35;
+            } else if (formData.vehicle.energy) {
+                ecoScore = energyScores[formData.vehicle.energy] || 0.35;
+            } else {
+                // Par défaut, on considère diesel (conservateur pour le malus)
+                ecoScore = 0.35;
+            }
 
             // Capacité contributive basée sur la valeur ARGUS
             // Plus la voiture est chère, plus la capacité est élevée

@@ -66,6 +66,27 @@ class VehicleDatabase:
         # Créer un index de recherche
         self._build_search_index()
 
+    def _normalize_brand(self, brand: str) -> str:
+        """Normalise les noms de marques pour la recherche."""
+        brand = brand.upper().strip()
+        # Mapping des variations de noms de marques
+        brand_aliases = {
+            'BMW': 'B.M.W.',
+            'B.M.W.': 'B.M.W.',
+            'MERCEDES': 'MERCEDES-BENZ',
+            'MERCEDES BENZ': 'MERCEDES-BENZ',
+            'MERCEDES-BENZ': 'MERCEDES-BENZ',
+            'VW': 'VOLKSWAGEN',
+            'VOLKSWAGEN': 'VOLKSWAGEN',
+            'ALFA': 'ALFA ROMEO',
+            'ALFA ROMEO': 'ALFA ROMEO',
+            'LAND ROVER': 'LAND ROVER',
+            'LANDROVER': 'LAND ROVER',
+            'ASTON': 'ASTON MARTIN',
+            'ASTON MARTIN': 'ASTON MARTIN',
+        }
+        return brand_aliases.get(brand, brand)
+
     def _build_search_index(self):
         """Construit un index pour la recherche rapide."""
         self.brand_index = {}
@@ -76,9 +97,17 @@ class VehicleDatabase:
             model = str(row.get('Modèle', '')).upper().strip()
 
             if brand:
+                # Indexer avec le nom original ET le nom normalisé
                 if brand not in self.brand_index:
                     self.brand_index[brand] = []
                 self.brand_index[brand].append(idx)
+
+                # Ajouter aussi les alias inversés
+                for alias, normalized in [('B.M.W.', 'BMW'), ('MERCEDES-BENZ', 'MERCEDES')]:
+                    if brand == alias:
+                        if normalized not in self.brand_index:
+                            self.brand_index[normalized] = []
+                        self.brand_index[normalized].append(idx)
 
             if model:
                 key = f"{brand}_{model}"
@@ -105,8 +134,11 @@ class VehicleDatabase:
         Returns:
             Dict avec les informations du véhicule ou None
         """
-        brand = brand.upper().strip()
+        brand_input = brand.upper().strip()
         model = model.upper().strip()
+
+        # Normaliser la marque pour la recherche
+        brand = self._normalize_brand(brand_input)
 
         # Recherche dans l'index
         key = f"{brand}_{model}"
@@ -116,18 +148,28 @@ class VehicleDatabase:
         if key in self.model_index:
             matches = self.model_index[key]
         else:
-            # Recherche partielle
+            # Recherche partielle dans les modèles
             for k, indices in self.model_index.items():
-                if brand in k and model in k:
+                k_brand, k_model = k.split('_', 1) if '_' in k else (k, '')
+                # Vérifier si la marque correspond (avec normalisation)
+                brand_match = (brand in k_brand or k_brand in brand or
+                               brand_input in k_brand or k_brand in brand_input or
+                               self._normalize_brand(k_brand) == brand)
+                model_match = model in k_model or k_model in model
+                if brand_match and model_match:
                     matches.extend(indices)
 
             # Si toujours rien, recherche par marque seule
-            if not matches and brand in self.brand_index:
-                # Chercher dans les modèles de la marque
-                for idx in self.brand_index[brand]:
-                    row_model = str(self.df.loc[idx, 'Modèle']).upper()
-                    if model in row_model or row_model in model:
-                        matches.append(idx)
+            if not matches:
+                # Essayer avec la marque normalisée ET l'input original
+                for b in [brand, brand_input]:
+                    if b in self.brand_index:
+                        for idx in self.brand_index[b]:
+                            row_model = str(self.df.loc[idx, 'Modèle']).upper()
+                            if model in row_model or row_model in model:
+                                matches.append(idx)
+                        if matches:
+                            break
 
         if not matches:
             return None
