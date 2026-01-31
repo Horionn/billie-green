@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billie Green - Tarification Intelligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'billie': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .eco-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+        }
+
+        .card-shadow {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-focus:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .price-reveal {
+            animation: priceReveal 0.5s ease-out forwards;
+        }
+
+        @keyframes priceReveal {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .loading-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+
+        .score-bar {
+            transition: width 0.8s ease-out;
+        }
+
+        /* CO2 Category Badge */
+        .co2-badge {
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="py-6 px-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 eco-gradient rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Billie Green</h1>
+                    <p class="text-xs text-gray-500">Tarification éco-responsable</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#calculator" class="text-gray-600 hover:text-billie-600 transition">Calculateur</a>
+                <a href="#about" class="text-gray-600 hover:text-billie-600 transition">Comment ça marche</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                Le prix comme moteur de la
+                <span class="text-billie-600">transition écologique</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Calculez votre tarif personnalisé qui récompense les pratiques éco-responsables
+                sans pénaliser l'accessibilité.
+            </p>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section id="calculator" class="py-8 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="glass rounded-3xl card-shadow p-8 md:p-12">
+                <form id="pricingForm" class="space-y-8">
+                    <!-- Trajet -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-billie-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Ville de départ
+                                </span>
+                            </label>
+                            <select id="origin" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition" required>
+                                <option value="">Sélectionnez...</option>
+                                <option value="Paris">Paris</option>
+                                <option value="Lyon">Lyon</option>
+                                <option value="Marseille">Marseille</option>
+                                <option value="Montpellier">Montpellier</option>
+                                <option value="Nice">Nice</option>
+                                <option value="Aix-en-Provence">Aix-en-Provence</option>
+                                <option value="Grenoble">Grenoble</option>
+                                <option value="Dijon">Dijon</option>
+                                <option value="Valence">Valence</option>
+                                <option value="Avignon">Avignon</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-billie-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Ville d'arrivée
+                                </span>
+                            </label>
+                            <select id="destination" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition" required>
+                                <option value="">Sélectionnez...</option>
+                                <option value="Paris">Paris</option>
+                                <option value="Lyon">Lyon</option>
+                                <option value="Marseille">Marseille</option>
+                                <option value="Montpellier">Montpellier</option>
+                                <option value="Nice">Nice</option>
+                                <option value="Aix-en-Provence">Aix-en-Provence</option>
+                                <option value="Grenoble">Grenoble</option>
+                                <option value="Dijon">Dijon</option>
+                                <option value="Valence">Valence</option>
+                                <option value="Avignon">Avignon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Véhicule -->
+                    <div class="bg-billie-50 rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-billie-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Votre véhicule
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Marque</label>
+                                <input type="text" id="brand" placeholder="Ex: RENAULT"
+                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition uppercase" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Modèle</label>
+                                <input type="text" id="model" placeholder="Ex: CLIO"
+                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition uppercase" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Année</label>
+                                <input type="number" id="year" placeholder="Ex: 2020" min="1990" max="2024"
+                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Type d'énergie</label>
+                                <select id="energy" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                                    <option value="">Auto-détection</option>
+                                    <option value="ESSENCE">Essence</option>
+                                    <option value="DIESEL">Diesel</option>
+                                    <option value="ELECTRIQUE">Électrique</option>
+                                    <option value="HYBRIDE">Hybride</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Valeur ARGUS (€)
+                                    <span class="text-gray-400 font-normal">(optionnel)</span>
+                                </label>
+                                <input type="number" id="argus" placeholder="Estimation automatique" min="0"
+                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Passagers</label>
+                            <select id="passengers" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                                <option value="1">1 personne</option>
+                                <option value="2">2 personnes</option>
+                                <option value="3">3 personnes</option>
+                                <option value="4">4 personnes</option>
+                                <option value="5">5+ personnes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jour</label>
+                            <select id="dayOfWeek" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                                <option value="0">Lundi</option>
+                                <option value="1">Mardi</option>
+                                <option value="2">Mercredi</option>
+                                <option value="3">Jeudi</option>
+                                <option value="4">Vendredi</option>
+                                <option value="5">Samedi</option>
+                                <option value="6">Dimanche</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Heure départ</label>
+                            <input type="number" id="hour" value="10" min="0" max="23"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-focus transition">
+                        </div>
+                        <div class="flex flex-col justify-end">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="isHoliday" class="w-5 h-5 rounded border-gray-300 text-billie-600 focus:ring-billie-500">
+                                <span class="text-sm text-gray-700">Vacances scolaires</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" id="submitBtn"
+                            class="eco-gradient text-white font-bold py-4 px-12 rounded-2xl text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                            Calculer mon tarif
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden py-12 text-center">
+                    <div class="inline-flex items-center space-x-3">
+                        <div class="w-3 h-3 bg-billie-500 rounded-full loading-pulse"></div>
+                        <div class="w-3 h-3 bg-billie-500 rounded-full loading-pulse" style="animation-delay: 0.2s"></div>
+                        <div class="w-3 h-3 bg-billie-500 rounded-full loading-pulse" style="animation-delay: 0.4s"></div>
+                    </div>
+                    <p class="mt-4 text-gray-600">Calcul en cours...</p>
+                </div>
+
+                <!-- Results -->
+                <div id="results" class="hidden mt-12">
+                    <div class="border-t border-gray-200 pt-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Votre tarif personnalisé</h3>
+
+                        <!-- Main Price -->
+                        <div class="text-center mb-8">
+                            <div class="inline-block bg-gradient-to-r from-billie-500 to-billie-700 rounded-3xl p-8 price-reveal">
+                                <span class="text-5xl md:text-7xl font-extrabold text-white" id="finalPrice">--</span>
+                                <span class="text-2xl text-billie-100">€</span>
+                            </div>
+                            <p class="mt-4 text-gray-600" id="priceExplanation">--</p>
+                        </div>
+
+                        <!-- Scores -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <!-- Eco Score -->
+                            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="font-semibold text-gray-700">Score écologique</span>
+                                    <span class="co2-badge" id="co2Badge">--</span>
+                                </div>
+                                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="ecoScoreBar" class="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 score-bar" style="width: 0%"></div>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-500" id="ecoScoreText">--</p>
+                            </div>
+
+                            <!-- Social Score -->
+                            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="font-semibold text-gray-700">Profil socio-économique</span>
+                                    <span class="text-sm text-billie-600 font-medium" id="socialLabel">--</span>
+                                </div>
+                                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="socialScoreBar" class="h-full bg-gradient-to-r from-billie-300 to-billie-600 score-bar" style="width: 0%"></div>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-500" id="socialScoreText">--</p>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h4 class="font-semibold text-gray-900 mb-4">Détail du calcul</h4>
+                            <div id="breakdownList" class="space-y-3">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+
+                        <!-- Trip Info -->
+                        <div class="mt-6 grid md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <span class="text-3xl font-bold text-gray-900" id="tripDistance">--</span>
+                                <span class="text-gray-600"> km</span>
+                                <p class="text-xs text-gray-500 mt-1">Distance</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <span class="text-3xl font-bold text-gray-900" id="tripDuration">--</span>
+                                <p class="text-xs text-gray-500 mt-1">Durée estimée</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <span class="text-3xl font-bold text-gray-900" id="tripCO2">--</span>
+                                <span class="text-gray-600"> kg</span>
+                                <p class="text-xs text-gray-500 mt-1">CO2 évité vs solo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section id="about" class="py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Comment ça marche ?</h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto eco-gradient rounded-2xl flex items-center justify-center mb-4 animate-float">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl text-gray-900 mb-2">Analyse IA</h3>
+                    <p class="text-gray-600">Notre modèle analyse l'impact carbone de votre véhicule via la base ADEME officielle.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto eco-gradient rounded-2xl flex items-center justify-center mb-4 animate-float" style="animation-delay: 0.5s">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl text-gray-900 mb-2">Éthique d'abord</h3>
+                    <p class="text-gray-600">Les profils socio-économiques défavorisés sont protégés : pas de pénalité injuste.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto eco-gradient rounded-2xl flex items-center justify-center mb-4 animate-float" style="animation-delay: 1s">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl text-gray-900 mb-2">Prix juste</h3>
+                    <p class="text-gray-600">Bonus pour les véhicules propres, tarifs adaptés selon le covoiturage et la demande.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 bg-white/50">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-gray-500 text-sm">
+                Billie Green - Faire du prix un moteur de la transition écologique
+            </p>
+            <p class="text-gray-400 text-xs mt-2">
+                Données émissions CO2 : ADEME Car Labelling | Prototype Symone 2024
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        // Form submission
+        document.getElementById('pricingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form values
+            const formData = {
+                vehicle: {
+                    brand: document.getElementById('brand').value.toUpperCase(),
+                    model: document.getElementById('model').value.toUpperCase(),
+                    year: parseInt(document.getElementById('year').value) || null,
+                    energy: document.getElementById('energy').value || null,
+                    argus_value: parseFloat(document.getElementById('argus').value) || null
+                },
+                trip: {
+                    origin: document.getElementById('origin').value,
+                    destination: document.getElementById('destination').value,
+                    day_of_week: parseInt(document.getElementById('dayOfWeek').value),
+                    hour: parseInt(document.getElementById('hour').value),
+                    is_holiday: document.getElementById('isHoliday').checked,
+                    is_summer: false
+                },
+                passengers: parseInt(document.getElementById('passengers').value)
+            };
+
+            // Show loading
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('submitBtn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/pricing/calculate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur de calcul');
+                }
+
+                const data = await response.json();
+                displayResults(data, formData.passengers);
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback: calcul local simulé
+                displaySimulatedResults(formData);
+            } finally {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+
+        function displayResults(data, passengers) {
+            // Show results section
+            document.getElementById('results').classList.remove('hidden');
+
+            // Main price
+            document.getElementById('finalPrice').textContent = data.final_price.toFixed(0);
+            document.getElementById('priceExplanation').textContent = data.explanation;
+
+            // Eco score
+            const ecoPercent = data.eco_score * 100;
+            document.getElementById('ecoScoreBar').style.width = `${ecoPercent}%`;
+            document.getElementById('ecoScoreText').textContent =
+                ecoPercent > 70 ? 'Excellent impact environnemental' :
+                ecoPercent > 40 ? 'Impact modéré' : 'Impact à améliorer';
+
+            // CO2 Badge
+            const co2Badge = document.getElementById('co2Badge');
+            co2Badge.textContent = data.co2_category;
+            co2Badge.style.backgroundColor = data.co2_color;
+            co2Badge.style.color = 'white';
+
+            // Social score
+            const socialPercent = data.social_score * 100;
+            document.getElementById('socialScoreBar').style.width = `${socialPercent}%`;
+            document.getElementById('socialLabel').textContent =
+                socialPercent < 40 ? 'Protégé' : 'Standard';
+            document.getElementById('socialScoreText').textContent =
+                socialPercent < 40 ? 'Protection éthique appliquée' :
+                'Tarification standard';
+
+            // Breakdown
+            const breakdownList = document.getElementById('breakdownList');
+            breakdownList.innerHTML = data.breakdown.map(item => `
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                    <div>
+                        <span class="font-medium text-gray-800">${item.label}</span>
+                        <p class="text-xs text-gray-500">${item.detail}</p>
+                    </div>
+                    <span class="font-bold ${item.value.startsWith('-') ? 'text-green-600' : item.value.startsWith('+') ? 'text-orange-600' : 'text-gray-900'}">${item.value}</span>
+                </div>
+            `).join('');
+
+            // Trip info
+            document.getElementById('tripDistance').textContent = data.trip_info.distance_km;
+            document.getElementById('tripDuration').textContent = data.trip_info.adjusted_duration_formatted;
+
+            // CO2 saved (simplified calculation)
+            const co2PerKm = data.vehicle_info.co2_g_km || 150;
+            const totalCO2 = (co2PerKm * data.trip_info.distance_km) / 1000; // kg
+            const co2Saved = totalCO2 * (1 - 1/passengers);
+            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function displaySimulatedResults(formData) {
+            // Simulation locale quand l'API n'est pas disponible
+            const distances = {
+                'Paris-Lyon': 462,
+                'Paris-Marseille': 774,
+                'Lyon-Marseille': 314,
+                'Paris-Montpellier': 763,
+                'Lyon-Montpellier': 303
+            };
+
+            const key = `${formData.trip.origin}-${formData.trip.destination}`;
+            const reverseKey = `${formData.trip.destination}-${formData.trip.origin}`;
+            const distance = distances[key] || distances[reverseKey] || 400;
+
+            // Prix de base
+            let basePrice = distance * 0.15;
+            basePrice = Math.max(basePrice, 20);
+
+            // Simulations des scores
+            const energyScores = {
+                'ELECTRIQUE': 0.95,
+                'HYBRIDE': 0.65,
+                'ESSENCE': 0.4,
+                'DIESEL': 0.35,
+                '': 0.5
+            };
+            const ecoScore = energyScores[formData.vehicle.energy || ''] || 0.5;
+
+            // Social score basé sur ARGUS
+            const argus = formData.vehicle.argus_value || 10000;
+            const socialScore = Math.min(argus / 40000, 1);
+
+            // Ajustement écologique
+            let ecoAdjustment = (ecoScore - 0.5) * 0.3;
+
+            // Protection éthique
+            if (ecoAdjustment < 0 && socialScore < 0.4) {
+                ecoAdjustment *= (1 - 0.7 * (1 - socialScore / 0.4));
+            }
+
+            // Covoiturage
+            const passengerBonus = 1 - (formData.passengers - 1) * 0.05;
+
+            const finalPrice = basePrice * (1 + ecoAdjustment) * passengerBonus;
+
+            // Affichage
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('finalPrice').textContent = finalPrice.toFixed(0);
+            document.getElementById('priceExplanation').textContent =
+                ecoScore > 0.7 ? 'Votre trajet est éco-responsable' :
+                ecoScore < 0.4 && socialScore < 0.4 ? 'Impact carbone élevé mais malus atténué (profil protégé)' :
+                'Impact carbone modéré';
+
+            // Scores
+            document.getElementById('ecoScoreBar').style.width = `${ecoScore * 100}%`;
+            document.getElementById('socialScoreBar').style.width = `${socialScore * 100}%`;
+
+            // CO2 Badge
+            const co2Badge = document.getElementById('co2Badge');
+            if (ecoScore > 0.8) {
+                co2Badge.textContent = 'A';
+                co2Badge.style.backgroundColor = '#00A651';
+            } else if (ecoScore > 0.6) {
+                co2Badge.textContent = 'B';
+                co2Badge.style.backgroundColor = '#78B74A';
+            } else if (ecoScore > 0.4) {
+                co2Badge.textContent = 'C';
+                co2Badge.style.backgroundColor = '#F0D919';
+            } else {
+                co2Badge.textContent = 'D';
+                co2Badge.style.backgroundColor = '#F9A01B';
+            }
+            co2Badge.style.color = 'white';
+
+            document.getElementById('socialLabel').textContent = socialScore < 0.4 ? 'Protégé' : 'Standard';
+            document.getElementById('ecoScoreText').textContent =
+                ecoScore > 0.7 ? 'Excellent impact environnemental' :
+                ecoScore > 0.4 ? 'Impact modéré' : 'Impact à améliorer';
+            document.getElementById('socialScoreText').textContent =
+                socialScore < 0.4 ? 'Protection éthique appliquée' : 'Tarification standard';
+
+            // Breakdown
+            const breakdown = [
+                { label: 'Prix de base', value: `${basePrice.toFixed(2)}€`, detail: `${distance} km × 0.15€/km` }
+            ];
+
+            if (ecoAdjustment < 0) {
+                breakdown.push({
+                    label: 'Bonus écologique',
+                    value: `${(ecoAdjustment * 100).toFixed(1)}%`,
+                    detail: 'Véhicule à faibles émissions'
+                });
+            } else if (ecoAdjustment > 0) {
+                breakdown.push({
+                    label: socialScore < 0.4 ? 'Malus atténué' : 'Contribution écologique',
+                    value: `+${(ecoAdjustment * 100).toFixed(1)}%`,
+                    detail: socialScore < 0.4 ? 'Protection sociale appliquée' : 'Émissions élevées'
+                });
+            }
+
+            if (formData.passengers > 1) {
+                breakdown.push({
+                    label: 'Bonus covoiturage',
+                    value: `-${((1 - passengerBonus) * 100).toFixed(0)}%`,
+                    detail: `${formData.passengers} passagers`
+                });
+            }
+
+            breakdown.push({
+                label: 'Prix final',
+                value: `${finalPrice.toFixed(2)}€`,
+                detail: 'Tarif Billie Green'
+            });
+
+            document.getElementById('breakdownList').innerHTML = breakdown.map(item => `
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                    <div>
+                        <span class="font-medium text-gray-800">${item.label}</span>
+                        <p class="text-xs text-gray-500">${item.detail}</p>
+                    </div>
+                    <span class="font-bold ${item.value.startsWith('-') ? 'text-green-600' : item.value.startsWith('+') ? 'text-orange-600' : 'text-gray-900'}">${item.value}</span>
+                </div>
+            `).join('');
+
+            // Trip info
+            const hours = Math.floor(distance / 110);
+            const minutes = Math.round((distance / 110 - hours) * 60);
+            document.getElementById('tripDistance').textContent = distance;
+            document.getElementById('tripDuration').textContent = `${hours}h${minutes.toString().padStart(2, '0')}`;
+
+            const co2Saved = (150 * distance / 1000) * (1 - 1/formData.passengers);
+            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Set current day of week
+        document.getElementById('dayOfWeek').value = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+    </script>
+</body>
+</html>

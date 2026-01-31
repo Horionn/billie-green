@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PyTorch
+*.pt
+*.pth
+*.onnx
+
+# Données (trop volumineuses, garder seulement le CSV principal)
+data/*.csv
+!data/.gitkeep
+
+# Node (si frontend React à l'avenir)
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Secrets
+.env
+.env.local
+*.key
