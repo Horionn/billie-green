@@ -25,7 +25,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         header {
             background: white;
             border-bottom: 1px solid #e5e5e5;
@@ -35,23 +34,7 @@
         .header-content {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .logo {
-            width: 36px;
-            height: 36px;
-            background: #16a34a;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo svg {
-            width: 20px;
-            height: 20px;
-            color: white;
+            justify-content: space-between;
         }
 
         .brand {
@@ -63,10 +46,8 @@
         .tagline {
             font-size: 12px;
             color: #666;
-            margin-left: auto;
         }
 
-        /* Main */
         main {
             padding: 40px 0;
         }
@@ -82,7 +63,6 @@
             margin-bottom: 32px;
         }
 
-        /* Form Card */
         .card {
             background: white;
             border: 1px solid #e5e5e5;
@@ -168,7 +148,6 @@
             font-weight: 400;
         }
 
-        /* Button */
         .btn {
             background: #16a34a;
             color: white;
@@ -192,7 +171,6 @@
             cursor: not-allowed;
         }
 
-        /* Results */
         .results {
             display: none;
         }
@@ -225,7 +203,6 @@
             margin-top: 8px;
         }
 
-        /* Scores */
         .scores-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -292,7 +269,6 @@
             margin-top: 6px;
         }
 
-        /* Breakdown */
         .breakdown-item {
             display: flex;
             justify-content: space-between;
@@ -328,7 +304,6 @@
             color: #dc2626;
         }
 
-        /* Trip Info */
         .trip-info {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -360,7 +335,6 @@
             margin-top: 4px;
         }
 
-        /* Loading */
         .loading {
             display: none;
             text-align: center;
@@ -385,7 +359,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 32px 0;
@@ -397,11 +370,6 @@
 <body>
     <header>
         <div class="container header-content">
-            <div class="logo">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                </svg>
-            </div>
             <span class="brand">Billie Green</span>
             <span class="tagline">Tarification éco-responsable</span>
         </div>
@@ -412,7 +380,6 @@
         <p class="subtitle">Estimez votre tarif personnalisé selon l'impact carbone et votre profil.</p>
 
         <form id="pricingForm">
-            <!-- Trajet -->
             <div class="card">
                 <div class="card-title">Trajet</div>
                 <div class="form-grid">
@@ -455,7 +422,6 @@
                 </div>
             </div>
 
-            <!-- Véhicule -->
             <div class="card">
                 <div class="card-title">Véhicule</div>
                 <div class="form-grid form-grid-3">
@@ -485,12 +451,11 @@
                     </div>
                     <div class="form-group">
                         <label for="argus">Valeur ARGUS (€)</label>
-                        <input type="number" id="argus" placeholder="Optionnel" min="0">
+                        <input type="number" id="argus" placeholder="Estimation du prix du véhicule" min="0">
                     </div>
                 </div>
             </div>
 
-            <!-- Options -->
             <div class="card">
                 <div class="card-title">Options</div>
                 <div class="form-grid form-grid-4">
@@ -530,13 +495,11 @@
             <button type="submit" class="btn" id="submitBtn">Calculer le tarif</button>
         </form>
 
-        <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Calcul en cours...</p>
         </div>
 
-        <!-- Results -->
         <div class="results" id="results">
             <div class="card">
                 <div class="price-display">
@@ -558,7 +521,7 @@
                     </div>
                     <div class="score-card">
                         <div class="score-header">
-                            <span class="score-label">Profil socio-économique</span>
+                            <span class="score-label">Capacité contributive</span>
                             <span class="score-badge" id="socialLabel" style="background: #e5e5e5;">--</span>
                         </div>
                         <div class="score-bar">
@@ -598,25 +561,38 @@
     <script>
         const API_BASE = 'http://localhost:8000';
 
-        // Distances réelles (km)
+        // Distances réelles complètes (km) - source Google Maps
         const DISTANCES = {
+            // Paris
             'Paris-Lyon': 462, 'Paris-Marseille': 774, 'Paris-Montpellier': 763,
             'Paris-Nice': 932, 'Paris-Grenoble': 574, 'Paris-Aix-en-Provence': 759,
             'Paris-Dijon': 311, 'Paris-Valence': 560, 'Paris-Avignon': 683,
             'Paris-Toulon': 839, 'Paris-Cannes': 902,
+            // Lyon
             'Lyon-Marseille': 314, 'Lyon-Montpellier': 303, 'Lyon-Nice': 472,
             'Lyon-Grenoble': 111, 'Lyon-Aix-en-Provence': 299, 'Lyon-Valence': 100,
             'Lyon-Avignon': 230, 'Lyon-Toulon': 378, 'Lyon-Cannes': 442, 'Lyon-Dijon': 192,
+            // Marseille
             'Marseille-Montpellier': 169, 'Marseille-Nice': 198, 'Marseille-Grenoble': 306,
             'Marseille-Aix-en-Provence': 31, 'Marseille-Avignon': 99, 'Marseille-Toulon': 66,
-            'Marseille-Cannes': 178, 'Marseille-Valence': 215,
+            'Marseille-Cannes': 178, 'Marseille-Valence': 215, 'Marseille-Dijon': 506,
+            // Grenoble
             'Grenoble-Nice': 336, 'Grenoble-Montpellier': 295, 'Grenoble-Aix-en-Provence': 290,
             'Grenoble-Avignon': 235, 'Grenoble-Valence': 95, 'Grenoble-Toulon': 350,
-            'Grenoble-Cannes': 315, 'Grenoble-Dijon': 299,
+            'Grenoble-Cannes': 315, 'Grenoble-Dijon': 299, 'Grenoble-Marseille': 306,
+            // Montpellier
             'Montpellier-Nice': 329, 'Montpellier-Aix-en-Provence': 153,
             'Montpellier-Avignon': 92, 'Montpellier-Toulon': 233, 'Montpellier-Cannes': 303,
+            'Montpellier-Valence': 210, 'Montpellier-Dijon': 495, 'Montpellier-Grenoble': 295,
+            // Nice
             'Nice-Aix-en-Provence': 177, 'Nice-Avignon': 256, 'Nice-Toulon': 150,
-            'Nice-Cannes': 33, 'Avignon-Aix-en-Provence': 82, 'Toulon-Cannes': 123
+            'Nice-Cannes': 33, 'Nice-Valence': 374, 'Nice-Dijon': 664,
+            // Autres
+            'Dijon-Valence': 292, 'Dijon-Avignon': 422, 'Dijon-Toulon': 570, 'Dijon-Cannes': 634,
+            'Dijon-Aix-en-Provence': 490, 'Valence-Avignon': 130, 'Valence-Toulon': 280,
+            'Valence-Cannes': 344, 'Valence-Aix-en-Provence': 200, 'Avignon-Toulon': 165,
+            'Avignon-Cannes': 229, 'Avignon-Aix-en-Provence': 82, 'Toulon-Cannes': 123,
+            'Toulon-Aix-en-Provence': 84, 'Cannes-Aix-en-Provence': 152
         };
 
         function getDistance(origin, destination) {
@@ -647,7 +623,6 @@
                 passengers: parseInt(document.getElementById('passengers').value)
             };
 
-            // Validation
             if (formData.trip.origin === formData.trip.destination) {
                 alert('Le départ et l\'arrivée doivent être différents.');
                 return;
@@ -680,36 +655,37 @@
             document.getElementById('results').classList.add('visible');
             document.getElementById('finalPrice').textContent = data.final_price.toFixed(0);
 
-            // Eco score
             const ecoPercent = data.eco_score * 100;
             document.getElementById('ecoScoreBar').style.width = `${ecoPercent}%`;
             document.getElementById('ecoScoreText').textContent =
                 ecoPercent > 70 ? 'Faibles émissions' :
                 ecoPercent > 40 ? 'Émissions modérées' : 'Émissions élevées';
 
-            // CO2 Badge
             const badge = document.getElementById('co2Badge');
             badge.textContent = data.co2_category;
             badge.style.background = data.co2_color;
             badge.style.color = 'white';
 
-            // Social score
             const socialPercent = data.social_score * 100;
             document.getElementById('socialScoreBar').style.width = `${socialPercent}%`;
             const socialLabel = document.getElementById('socialLabel');
-            if (socialPercent < 40) {
-                socialLabel.textContent = 'Protégé';
-                socialLabel.style.background = '#dcfce7';
-                socialLabel.style.color = '#16a34a';
-            } else {
-                socialLabel.textContent = 'Standard';
+            if (socialPercent > 60) {
+                socialLabel.textContent = 'Élevée';
+                socialLabel.style.background = '#fef3c7';
+                socialLabel.style.color = '#d97706';
+            } else if (socialPercent > 30) {
+                socialLabel.textContent = 'Moyenne';
                 socialLabel.style.background = '#e5e5e5';
                 socialLabel.style.color = '#666';
+            } else {
+                socialLabel.textContent = 'Protégée';
+                socialLabel.style.background = '#dcfce7';
+                socialLabel.style.color = '#16a34a';
             }
             document.getElementById('socialScoreText').textContent =
-                socialPercent < 40 ? 'Protection tarifaire appliquée' : 'Tarification standard';
+                socialPercent > 60 ? 'Contribution normale' :
+                socialPercent > 30 ? 'Contribution modérée' : 'Malus écologique atténué';
 
-            // Breakdown
             const list = document.getElementById('breakdownList');
             list.innerHTML = data.breakdown.map(item => `
                 <div class="breakdown-item">
@@ -721,7 +697,6 @@
                 </div>
             `).join('');
 
-            // Trip info
             document.getElementById('tripDistance').textContent = data.trip_info.distance_km;
             document.getElementById('tripDuration').textContent = data.trip_info.adjusted_duration_formatted;
             const co2PerKm = data.vehicle_info.co2_g_km || 150;
@@ -732,68 +707,145 @@
         }
 
         function displayLocalResults(formData) {
-            const distance = getDistance(formData.trip.origin, formData.trip.destination) || 400;
+            const distance = getDistance(formData.trip.origin, formData.trip.destination);
 
+            if (!distance) {
+                alert(`Distance non trouvée pour ${formData.trip.origin} - ${formData.trip.destination}`);
+                return;
+            }
+
+            // Prix de base
             let basePrice = distance * 0.15;
             basePrice = Math.max(basePrice, 20);
 
-            const energyScores = { 'ELECTRIQUE': 0.95, 'HYBRIDE': 0.65, 'ESSENCE': 0.4, 'DIESEL': 0.35, '': 0.5 };
-            const ecoScore = energyScores[formData.vehicle.energy || ''] || 0.5;
+            // Score écologique basé sur le type d'énergie
+            // 0 = très polluant, 1 = propre
+            const energyScores = {
+                'ELECTRIQUE': 0.95,
+                'HYBRIDE': 0.65,
+                'ESSENCE': 0.4,
+                'DIESEL': 0.35,
+                '': 0.45
+            };
+            const ecoScore = energyScores[formData.vehicle.energy || ''] || 0.45;
 
+            // Capacité contributive basée sur la valeur ARGUS
+            // Plus la voiture est chère, plus la capacité est élevée
             const argus = formData.vehicle.argus_value || 10000;
-            const socialScore = Math.min(argus / 40000, 1);
+            const socialScore = Math.min(argus / 35000, 1); // 35k€ = capacité max
 
-            let ecoAdjustment = (ecoScore - 0.5) * 0.3;
-            if (ecoAdjustment < 0 && socialScore < 0.4) {
-                ecoAdjustment *= (1 - 0.7 * (1 - socialScore / 0.4));
+            // NOUVELLE LOGIQUE ÉTHIQUE:
+            // Malus écologique = pollution × capacité à payer
+            // - Voiture chère + polluante = GROS malus
+            // - Voiture pas chère + polluante = PAS de malus (on protège)
+            // - Voiture propre = bonus (quelle que soit la valeur)
+
+            let adjustment = 0;
+            let adjustmentLabel = '';
+            let adjustmentDetail = '';
+
+            if (ecoScore >= 0.7) {
+                // Véhicule propre → bonus
+                adjustment = -0.12; // -12%
+                adjustmentLabel = 'Bonus écologique';
+                adjustmentDetail = 'Véhicule à faibles émissions';
+            } else if (ecoScore < 0.45) {
+                // Véhicule polluant → malus proportionnel à la capacité
+                if (socialScore > 0.6) {
+                    // Voiture chère et polluante → gros malus
+                    adjustment = 0.15; // +15%
+                    adjustmentLabel = 'Contribution écologique';
+                    adjustmentDetail = 'Véhicule polluant, capacité contributive élevée';
+                } else if (socialScore > 0.3) {
+                    // Voiture moyenne et polluante → petit malus
+                    adjustment = 0.05; // +5%
+                    adjustmentLabel = 'Contribution écologique';
+                    adjustmentDetail = 'Véhicule polluant, capacité contributive moyenne';
+                } else {
+                    // Voiture pas chère et polluante → PAS de malus
+                    adjustment = 0;
+                    adjustmentLabel = 'Malus exonéré';
+                    adjustmentDetail = 'Capacité contributive limitée';
+                }
             }
 
-            const passengerBonus = 1 - (formData.passengers - 1) * 0.05;
-            const finalPrice = basePrice * (1 + ecoAdjustment) * passengerBonus;
+            // Bonus covoiturage
+            const passengerBonus = (formData.passengers - 1) * 0.05;
+            const finalPrice = basePrice * (1 + adjustment) * (1 - passengerBonus);
 
+            // Affichage
             document.getElementById('results').classList.add('visible');
-            document.getElementById('finalPrice').textContent = finalPrice.toFixed(0);
+            document.getElementById('finalPrice').textContent = Math.round(finalPrice);
 
-            // Scores
+            // Score bars
             document.getElementById('ecoScoreBar').style.width = `${ecoScore * 100}%`;
             document.getElementById('socialScoreBar').style.width = `${socialScore * 100}%`;
 
+            // CO2 Badge
             const badge = document.getElementById('co2Badge');
             if (ecoScore > 0.8) { badge.textContent = 'A'; badge.style.background = '#16a34a'; }
             else if (ecoScore > 0.6) { badge.textContent = 'B'; badge.style.background = '#22c55e'; }
             else if (ecoScore > 0.4) { badge.textContent = 'C'; badge.style.background = '#eab308'; }
-            else { badge.textContent = 'D'; badge.style.background = '#f97316'; }
+            else if (ecoScore > 0.3) { badge.textContent = 'D'; badge.style.background = '#f97316'; }
+            else { badge.textContent = 'E'; badge.style.background = '#ef4444'; }
             badge.style.color = 'white';
 
+            // Social label
             const socialLabel = document.getElementById('socialLabel');
-            if (socialScore < 0.4) {
-                socialLabel.textContent = 'Protégé';
-                socialLabel.style.background = '#dcfce7';
-                socialLabel.style.color = '#16a34a';
-            } else {
-                socialLabel.textContent = 'Standard';
+            if (socialScore > 0.6) {
+                socialLabel.textContent = 'Élevée';
+                socialLabel.style.background = '#fef3c7';
+                socialLabel.style.color = '#d97706';
+            } else if (socialScore > 0.3) {
+                socialLabel.textContent = 'Moyenne';
                 socialLabel.style.background = '#e5e5e5';
                 socialLabel.style.color = '#666';
+            } else {
+                socialLabel.textContent = 'Protégée';
+                socialLabel.style.background = '#dcfce7';
+                socialLabel.style.color = '#16a34a';
             }
 
             document.getElementById('ecoScoreText').textContent =
-                ecoScore > 0.7 ? 'Faibles émissions' : ecoScore > 0.4 ? 'Émissions modérées' : 'Émissions élevées';
+                ecoScore > 0.7 ? 'Faibles émissions' :
+                ecoScore > 0.4 ? 'Émissions modérées' : 'Émissions élevées';
+
             document.getElementById('socialScoreText').textContent =
-                socialScore < 0.4 ? 'Protection tarifaire appliquée' : 'Tarification standard';
+                socialScore > 0.6 ? 'Contribution normale applicable' :
+                socialScore > 0.3 ? 'Contribution modérée' : 'Malus écologique exonéré';
 
             // Breakdown
             const breakdown = [
                 { label: 'Prix de base', detail: `${distance} km × 0,15 €/km`, value: `${basePrice.toFixed(2)} €` }
             ];
-            if (ecoAdjustment < 0) {
-                breakdown.push({ label: 'Bonus écologique', detail: 'Faibles émissions', value: `${(ecoAdjustment * 100).toFixed(0)}%` });
-            } else if (ecoAdjustment > 0) {
-                breakdown.push({ label: socialScore < 0.4 ? 'Malus atténué' : 'Contribution carbone', detail: socialScore < 0.4 ? 'Protection appliquée' : 'Émissions élevées', value: `+${(ecoAdjustment * 100).toFixed(0)}%` });
+
+            if (adjustment !== 0) {
+                breakdown.push({
+                    label: adjustmentLabel,
+                    detail: adjustmentDetail,
+                    value: `${adjustment > 0 ? '+' : ''}${(adjustment * 100).toFixed(0)}%`
+                });
+            } else if (ecoScore < 0.45 && socialScore <= 0.3) {
+                breakdown.push({
+                    label: 'Malus exonéré',
+                    detail: 'Capacité contributive limitée',
+                    value: `0%`
+                });
             }
+
             if (formData.passengers > 1) {
-                breakdown.push({ label: 'Bonus covoiturage', detail: `${formData.passengers} passagers`, value: `-${((1 - passengerBonus) * 100).toFixed(0)}%` });
+                breakdown.push({
+                    label: 'Bonus covoiturage',
+                    detail: `${formData.passengers} passagers`,
+                    value: `-${(passengerBonus * 100).toFixed(0)}%`
+                });
             }
-            breakdown.push({ label: 'Total', detail: 'Tarif Billie Green', value: `${finalPrice.toFixed(2)} €` });
+
+            breakdown.push({
+                label: 'Total',
+                detail: 'Tarif Billie Green',
+                value: `${Math.round(finalPrice)} €`
+            });
 
             document.getElementById('breakdownList').innerHTML = breakdown.map(item => `
                 <div class="breakdown-item">
@@ -810,7 +862,9 @@
             const minutes = Math.round((distance / 110 - hours) * 60);
             document.getElementById('tripDistance').textContent = distance;
             document.getElementById('tripDuration').textContent = `${hours}h${minutes.toString().padStart(2, '0')}`;
-            const co2Saved = (150 * distance / 1000) * (1 - 1/formData.passengers);
+
+            const co2PerKm = ecoScore > 0.8 ? 0 : ecoScore > 0.6 ? 80 : ecoScore > 0.4 ? 130 : 180;
+            const co2Saved = (co2PerKm * distance / 1000) * (1 - 1/formData.passengers);
             document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
 
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
