@@ -1,0 +1,212 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                     🚛 MODULE CALCULATEUR CAMION SYMONE                      ║
+║                          Calcul automatique biogaz                           ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+📦 FICHIERS LIVRÉS
+════════════════════════════════════════════════════════════════════════════════
+
+1. symone_truck_calculator.py         [Core - 450 lignes]
+   └─ Module principal de calcul (péage + carburant)
+   └─ Classes: TruckSpecs, SymoneTruckCalculator
+   └─ 45+ trajets avec tarifs péages réels
+   └─ Tests intégrés
+
+2. api_truck_endpoints.py             [API - 150 lignes]
+   └─ Endpoints FastAPI à intégrer dans main.py
+   └─ 4 nouveaux endpoints REST
+   └─ Modèles Pydantic inclus
+
+3. INTEGRATION_GUIDE.md               [Documentation - Installation]
+   └─ Guide pas-à-pas d'intégration
+   └─ Exemples de requêtes HTTP
+   └─ Paramétrage personnalisé
+
+4. README_TRUCK.md                    [Documentation - Référence]
+   └─ Documentation complète du module
+   └─ Cas d'usage détaillés
+   └─ Tableaux comparatifs
+   └─ Évolutions futures
+
+5. test_truck_api.py                  [Tests - 250 lignes]
+   └─ 6 tests automatisés
+   └─ Validation de l'intégration
+   └─ Exemples d'utilisation
+
+
+🎯 FONCTIONNALITÉS PRINCIPALES
+════════════════════════════════════════════════════════════════════════════════
+
+✅ Calcul péage automatique (classe 4 - poids lourds)
+   • 45+ trajets avec tarifs réels
+   • Estimation pour trajets non listés
+
+✅ Calcul carburant biogaz
+   • Consommation: 25 kg/100km (configurable)
+   • Prix: 0.85 €/kg (configurable)
+
+✅ Bilan environnemental
+   • CO2: 15 g/km (vs 600-800 g/km diesel)
+   • Réduction de 97.5% des émissions
+
+✅ Comparaison avec diesel
+   • Calcul économies/surcoûts
+   • Impact environnemental
+
+✅ Intégration API complète
+   • 4 nouveaux endpoints REST
+   • Compatible avec système existant
+   • Calcul automatique de distance
+
+
+📊 EXEMPLE DE RÉSULTAT
+════════════════════════════════════════════════════════════════════════════════
+
+🚛 PARIS → LYON (462 km)
+
+┌────────────────────────────────────┐
+│ DÉTAIL DES COÛTS                   │
+├────────────────────────────────────┤
+│ Péage autoroute        62.80 €     │
+│ Carburant biogaz       98.18 €     │
+│ (115.5 kg × 0.85€/kg)              │
+├────────────────────────────────────┤
+│ TOTAL                 160.98 €     │
+│ Prix au km            0.348 €/km   │
+└────────────────────────────────────┘
+
+🌱 ENVIRONNEMENT
+┌────────────────────────────────────┐
+│ CO2 émis              6.93 kg      │
+│ vs Diesel           ~277 kg        │
+│ Économie CO2         -97.5%        │
+└────────────────────────────────────┘
+
+💰 COMPARAISON DIESEL
+┌────────────────────────────────────┐
+│ Coût équivalent      138.60 €      │
+│ Différence           +22.38 €      │
+│ Surcoût              +16.1%        │
+│                                    │
+│ ⚠️  Légèrement plus cher MAIS:     │
+│   • Production locale               │
+│   • Impact CO2 quasi nul           │
+│   • Valorisation déchets           │
+└────────────────────────────────────┘
+
+
+🔌 NOUVEAUX ENDPOINTS API
+════════════════════════════════════════════════════════════════════════════════
+
+1. GET /api/truck/specs
+   └─ Spécifications du camion Symone
+
+2. POST /api/truck/calculate
+   └─ Calcul coût d'un trajet
+   └─ Distance auto ou manuelle
+   └─ Paramètres personnalisables
+
+3. GET /api/truck/toll-prices
+   └─ Liste de tous les tarifs péages
+
+4. POST /api/truck/compare-with-car
+   └─ Comparaison camion vs voiture
+   └─ Utile pour analyse concurrence
+
+
+🚀 INSTALLATION RAPIDE
+════════════════════════════════════════════════════════════════════════════════
+
+1. Copier symone_truck_calculator.py dans backend/
+
+2. Dans main.py, ajouter les imports:
+   from backend.symone_truck_calculator import (
+       SymoneTruckCalculator, TruckSpecs, 
+       calculate_symone_truck_cost
+   )
+
+3. Initialiser:
+   truck_calculator = SymoneTruckCalculator()
+
+4. Copier les endpoints depuis api_truck_endpoints.py
+
+5. Tester:
+   python test_truck_api.py
+
+Voir INTEGRATION_GUIDE.md pour détails complets
+
+
+💡 CAS D'USAGE
+════════════════════════════════════════════════════════════════════════════════
+
+✓ Devis automatique pour clients
+✓ Optimisation routes (choisir la moins chère)
+✓ Reporting CO2 mensuel de la flotte
+✓ Arguments commerciaux (économies environnementales)
+✓ Comparaison compétitivité vs concurrence
+✓ Planification budgétaire transport
+
+
+⚙️ PARAMÈTRES MODIFIABLES
+════════════════════════════════════════════════════════════════════════════════
+
+Dans symone_truck_calculator.py:
+
+• Consommation biogaz     [ligne 16]   25 kg/100km
+• Prix du biogaz          [ligne 18]   0.85 €/kg
+• Émissions CO2           [ligne 22]   15 g/km
+• Tarifs péages          [ligne 27+]   TRUCK_TOLL_PRICES{}
+
+
+📈 TRAJETS AVEC TARIFS RÉELS
+════════════════════════════════════════════════════════════════════════════════
+
+Paris → Lyon              462 km    62.80€
+Paris → Marseille         774 km   105.40€
+Paris → Nice              932 km   127.80€
+Lyon → Marseille          314 km    42.90€
+Lyon → Nice               472 km    64.60€
+Grenoble → Nice           336 km    45.90€
+Marseille → Montpellier   169 km    23.10€
+... et 38+ autres trajets
+
+Pour trajets non listés: estimation automatique à 0.136 €/km
+
+
+🌍 IMPACT ENVIRONNEMENTAL
+════════════════════════════════════════════════════════════════════════════════
+
+Trajet Paris-Lyon (462 km):
+
+Diesel:     ~277 kg CO2
+Biogaz:       ~7 kg CO2
+━━━━━━━━━━━━━━━━━━━━━━━
+Économie:   270 kg CO2  (-97.5%)
+
+Équivalent à:
+  🌳 13 arbres plantés
+  🚗 1,385 km évités en voiture essence
+  ♻️  135 kg de déchets organiques valorisés
+
+
+📞 SUPPORT & DOCUMENTATION
+════════════════════════════════════════════════════════════════════════════════
+
+📖 Guide d'intégration    → INTEGRATION_GUIDE.md
+📚 Documentation complète → README_TRUCK.md
+🧪 Tests automatisés     → test_truck_api.py
+💻 Code source           → symone_truck_calculator.py
+🔌 Endpoints API         → api_truck_endpoints.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    ✅ Module prêt à l'emploi !
+                    
+         Intégration estimée: 15-30 minutes
+         Tests inclus • Documentation complète • Production-ready
+         
+═══════════════════════════════════════════════════════════════════════════════
