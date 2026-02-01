@@ -1,4 +1,0 @@
-Type de trajet;Coût réel estimé (voiture 5CV);Coût moyen estimé par répondants;Prix minimum spontané (Symone);Prix maximum spontané (Symone);Prix minimum assisté (Symone);Prix maximum assisté (Symone);Prix maximisant le volume;% prêts à payer 300€ (certainement + probablement)
-Trajet long (Paris–Méditerranée);315 €;171 €;50 € (médiane);250 € (médiane);80 € (médiane);300 € (médiane);190 €;~40% (certainement) / ~39% (probablement)
-Trajet moyen (Paris–Lyon);175 €;126 €;50 € (médiane);120 € (médiane);95 € (médiane);155 € (médiane);110 €;Non spécifié
-Trajet court (Lyon–Méditerranée);113 €;116 €;Non spécifié;Non spécifié;Non spécifié;Non spécifié;101 €;Non spécifié
