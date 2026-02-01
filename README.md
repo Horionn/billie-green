@@ -55,8 +55,19 @@ Architecture neuronale personnalisée avec :
 git clone https://github.com/votre-username/billie-green.git
 cd billie-green
 
-# Lancer
-./run.sh
+python3.9 -m venv venv
+
+source venv/bin/activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+OPENROUTE_API_KEY="Votre clé"
+
+python3 -m uvicorn backend.main:app --reload
+
+open frontend/index.html
+
 ```
 
 Puis ouvrir `frontend/index.html` dans un navigateur.
