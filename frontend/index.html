@@ -522,6 +522,403 @@
             font-weight: 500;
         }
 
+        /* =====================================================
+           STYLES CO2 ENRICHIS - MODÈLE GREENGO
+           ===================================================== */
+
+        .co2-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .co2-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .co2-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .co2-header .quota-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .quota-low { background: #dcfce7; color: #16a34a; }
+        .quota-medium { background: #fef9c3; color: #ca8a04; }
+        .quota-high { background: #fee2e2; color: #dc2626; }
+
+        /* Billie Green Savings Box */
+        .billie-savings {
+            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+            border: 2px solid #16a34a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .billie-savings-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .billie-savings-headline {
+            font-size: 18px;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 4px;
+        }
+
+        .billie-savings-detail {
+            font-size: 14px;
+            color: #15803d;
+            margin-bottom: 8px;
+        }
+
+        .billie-savings-trees {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 500;
+        }
+
+        /* Équivalences Grid */
+        .equivalences-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .equivalences-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .equivalence-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .equivalence-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .equivalence-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .equivalence-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Comparaison Transports */
+        .transport-comparison {
+            margin-top: 16px;
+        }
+
+        .transport-comparison h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .transport-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .transport-label {
+            width: 100px;
+            font-size: 12px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .transport-bar-container {
+            flex: 1;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .transport-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .transport-bar-fill.billie { background: linear-gradient(90deg, #16a34a, #22c55e); }
+        .transport-bar-fill.tgv { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .transport-bar-fill.bus { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .transport-bar-fill.car { background: linear-gradient(90deg, #f97316, #fb923c); }
+        .transport-bar-fill.avion { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .transport-value {
+            width: 60px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-left: 8px;
+        }
+
+        /* Quota Progress */
+        .quota-progress {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .quota-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .quota-progress-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .quota-progress-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .quota-progress-bar {
+            height: 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .quota-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .quota-progress-text {
+            font-size: 11px;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        /* =====================================================
+           FAQ / ACCORDÉON - COMPRENDRE NOS CALCULS
+           ===================================================== */
+
+        .faq-section {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 2px solid #e5e5e5;
+        }
+
+        .faq-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .faq-section .section-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .accordion {
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: #f8f9fa;
+        }
+
+        .accordion-header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accordion-icon {
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            background: #16a34a;
+            padding: 6px 10px;
+            border-radius: 6px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .accordion-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .accordion-arrow {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: transform 0.3s;
+        }
+
+        .accordion.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .accordion.open .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-body {
+            padding: 0 20px 20px 20px;
+            color: #444;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .accordion-body p {
+            margin-bottom: 12px;
+        }
+
+        .accordion-body ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .accordion-body li {
+            margin-bottom: 8px;
+        }
+
+        .accordion-body strong {
+            color: #1a1a1a;
+        }
+
+        .accordion-body .highlight-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .accordion-body .highlight-box.warning {
+            background: #fef9c3;
+            border-left-color: #ca8a04;
+        }
+
+        .accordion-body .highlight-box.info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+
+        .accordion-body .source-tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .accordion-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        .accordion-body th, .accordion-body td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .accordion-body th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .accordion-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .formula-box {
+            background: #1a1a1a;
+            color: #22c55e;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -632,7 +1029,7 @@
                         <input type="number" id="year" placeholder="Ex: 2020" min="1990" max="2025">
                     </div>
                 </div>
-                <div class="form-grid" style="margin-top: 16px;">
+                <div class="form-grid form-grid-3" style="margin-top: 16px;">
                     <div class="form-group">
                         <label for="energy">Énergie</label>
                         <select id="energy">
@@ -641,17 +1038,90 @@
                             <option value="DIESEL">Diesel</option>
                             <option value="ELECTRIQUE">Électrique</option>
                             <option value="HYBRIDE">Hybride</option>
+                            <option value="HYBRIDE_RECHARGEABLE">Hybride rechargeable</option>
+                            <option value="GPL">GPL</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="argus">Valeur ARGUS (€)</label>
-                        <input type="number" id="argus" placeholder="Estimation du prix du véhicule" min="0">
+                        <label for="mileage">Kilométrage actuel</label>
+                        <input type="number" id="mileage" placeholder="Ex: 85000" min="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="argus">Valeur estimée (€)</label>
+                        <input type="number" id="argus" placeholder="Auto si vide" min="0">
+                    </div>
+                </div>
+                <div class="form-grid form-grid-3" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label for="annualKm">Km parcourus / an</label>
+                        <select id="annualKm">
+                            <option value="5000">Moins de 5 000 km</option>
+                            <option value="10000" selected>5 000 - 15 000 km</option>
+                            <option value="20000">15 000 - 25 000 km</option>
+                            <option value="30000">25 000 - 40 000 km</option>
+                            <option value="50000">Plus de 40 000 km</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicleOwnership">Propriété</label>
+                        <select id="vehicleOwnership">
+                            <option value="owner">Propriétaire</option>
+                            <option value="credit">Crédit en cours</option>
+                            <option value="lld">Location longue durée</option>
+                            <option value="company">Véhicule de fonction</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicleSegment">Catégorie</label>
+                        <select id="vehicleSegment">
+                            <option value="">Auto-détection</option>
+                            <option value="city">Citadine</option>
+                            <option value="compact">Compacte</option>
+                            <option value="sedan">Berline</option>
+                            <option value="suv">SUV / Crossover</option>
+                            <option value="premium">Premium / Luxe</option>
+                            <option value="utility">Utilitaire</option>
+                        </select>
                     </div>
                 </div>
                 <div id="vehicleInfoBadge"></div>
             </div>
 
-            <!-- OPTIONS -->
+            <!-- CONTEXTE -->
+            <div class="card">
+                <div class="card-title">Contexte du trajet</div>
+                <div class="form-grid form-grid-3">
+                    <div class="form-group">
+                        <label for="zone">Zone de résidence</label>
+                        <select id="zone">
+                            <option value="urban">Centre-ville / Métropole</option>
+                            <option value="suburban">Banlieue / Périurbain</option>
+                            <option value="rural" selected>Rural / Petite ville</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alternatives">Alternatives transport</label>
+                        <select id="alternatives">
+                            <option value="none">Aucune alternative</option>
+                            <option value="limited">Peu d'alternatives</option>
+                            <option value="some">Quelques options</option>
+                            <option value="good">Bien desservi</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripPurpose">Motif du trajet</label>
+                        <select id="tripPurpose">
+                            <option value="leisure">Loisirs / Vacances</option>
+                            <option value="family">Visite famille</option>
+                            <option value="work">Professionnel</option>
+                            <option value="medical">Médical</option>
+                            <option value="essential">Essentiel / Contraint</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIONS DE TRAJET -->
             <div class="card">
                 <div class="card-title">Options</div>
                 <div class="form-grid form-grid-4">
@@ -707,8 +1177,8 @@
                 <div class="scores-grid">
                     <div class="score-card">
                         <div class="score-header">
-                            <span class="score-label">Score écologique</span>
-                            <span class="score-badge" id="co2Badge" style="background: #e5e5e5;">--</span>
+                            <span class="score-label">Émissions véhicule</span>
+                            <span class="score-badge" id="co2Badge" style="background: #e5e5e5; font-size: 11px; min-width: 65px;">-- g/km</span>
                         </div>
                         <div class="score-bar">
                             <div class="score-fill eco" id="ecoScoreBar" style="width: 0%;"></div>
@@ -743,10 +1213,497 @@
                     <div class="trip-stat">
                         <span class="trip-stat-value" id="tripCO2">--</span>
                         <span class="trip-stat-unit">kg</span>
-                        <p class="trip-stat-label">CO₂ évité</p>
+                        <p class="trip-stat-label">CO₂ du trajet</p>
                     </div>
                 </div>
                 <div class="trip-source" id="tripSource"></div>
+
+                <!-- Section CO2 Enrichie (Modèle GreenGo) -->
+                <div class="co2-section" id="co2Section" style="display: none;">
+                    <div class="co2-header">
+                        <h3>🌍 Impact Carbone</h3>
+                        <span class="quota-badge" id="quotaBadge">--% quota annuel</span>
+                    </div>
+
+                    <!-- Billie Green Savings -->
+                    <div class="billie-savings" id="billieSavings">
+                        <div class="billie-savings-icon" id="savingsIcon">🌿</div>
+                        <div class="billie-savings-headline" id="savingsHeadline">--</div>
+                        <div class="billie-savings-detail" id="savingsDetail">--</div>
+                        <div class="billie-savings-trees" id="savingsTrees">
+                            <span>🌳</span>
+                            <span id="savingsTreesText">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Équivalences parlantes -->
+                    <div class="equivalences-grid" id="equivalencesGrid">
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">🌳</div>
+                            <div class="equivalence-value" id="eqTrees">--</div>
+                            <div class="equivalence-label">arbres pendant 1 an</div>
+                        </div>
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">🚄</div>
+                            <div class="equivalence-value" id="eqTGV">--</div>
+                            <div class="equivalence-label">km en TGV</div>
+                        </div>
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">📱</div>
+                            <div class="equivalence-value" id="eqPhone">--</div>
+                            <div class="equivalence-label">charges smartphone</div>
+                        </div>
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">🥩</div>
+                            <div class="equivalence-value" id="eqBeef">--</div>
+                            <div class="equivalence-label">repas avec boeuf</div>
+                        </div>
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">📺</div>
+                            <div class="equivalence-value" id="eqNetflix">--</div>
+                            <div class="equivalence-label">heures de streaming</div>
+                        </div>
+                        <div class="equivalence-card">
+                            <div class="equivalence-icon">🚿</div>
+                            <div class="equivalence-value" id="eqShower">--</div>
+                            <div class="equivalence-label">douches chaudes</div>
+                        </div>
+                    </div>
+
+                    <!-- Comparaison Transports -->
+                    <div class="transport-comparison">
+                        <h4>Comparer avec d'autres transports</h4>
+                        <div id="transportBars"></div>
+                    </div>
+
+                    <!-- Quota annuel -->
+                    <div class="quota-progress">
+                        <div class="quota-progress-header">
+                            <span class="quota-progress-label">Part de votre quota carbone annuel (2 tonnes)</span>
+                            <span class="quota-progress-value" id="quotaValue">--%</span>
+                        </div>
+                        <div class="quota-progress-bar">
+                            <div class="quota-progress-fill" id="quotaFill" style="width: 0%;"></div>
+                        </div>
+                        <div class="quota-progress-text">
+                            Objectif: 2 tonnes CO₂/an pour limiter le réchauffement à 2°C (Accord de Paris)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             SECTION FAQ - COMPRENDRE NOS CALCULS
+             ===================================================== -->
+        <div class="faq-section">
+            <h2>Comprendre nos calculs</h2>
+            <p class="section-subtitle">Découvrez la méthodologie derrière notre tarification éco-responsable</p>
+
+            <!-- Accordéon 1: Émissions CO2 -->
+            <div class="accordion" id="faq-co2">
+                <div class="accordion-header" onclick="toggleAccordion('faq-co2')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">CO₂</span>
+                        <span class="accordion-title">Comment calculons-nous les émissions CO2 ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>Notre calcul des émissions CO2 s'appuie sur la <strong>méthodologie ADEME</strong> (Agence de l'Environnement et de la Maîtrise de l'Énergie) et intègre l'ensemble du cycle de vie du véhicule.</p>
+
+                        <div class="highlight-box info">
+                            <strong>Périmètre complet :</strong> Nous prenons en compte non seulement les émissions à l'usage (combustion), mais aussi la fabrication du véhicule, la production du carburant/électricité et la fin de vie.
+                        </div>
+
+                        <h4>Facteurs d'émission par type de véhicule</h4>
+                        <table>
+                            <tr>
+                                <th>Type de véhicule</th>
+                                <th>gCO2e/km</th>
+                                <th>Fabrication</th>
+                                <th>Utilisation</th>
+                            </tr>
+                            <tr>
+                                <td>Diesel</td>
+                                <td><strong>217.6</strong></td>
+                                <td>12%</td>
+                                <td>88%</td>
+                            </tr>
+                            <tr>
+                                <td>Essence</td>
+                                <td><strong>223.0</strong></td>
+                                <td>12%</td>
+                                <td>88%</td>
+                            </tr>
+                            <tr>
+                                <td>Hybride</td>
+                                <td><strong>168.0</strong></td>
+                                <td>21%</td>
+                                <td>79%</td>
+                            </tr>
+                            <tr>
+                                <td>Électrique</td>
+                                <td><strong>103.4</strong></td>
+                                <td>81%</td>
+                                <td>19%</td>
+                            </tr>
+                            <tr>
+                                <td>Billie Green</td>
+                                <td><strong>50.0</strong></td>
+                                <td colspan="2">Bus électrique optimisé</td>
+                            </tr>
+                        </table>
+
+                        <p>Pour les véhicules électriques, la majeure partie des émissions provient de la <strong>fabrication de la batterie</strong>. À l'usage, ils sont beaucoup plus propres.</p>
+
+                        <div class="formula-box">
+                            CO2_trajet (kg) = (facteur_emission × distance_km) / 1000
+                        </div>
+
+                        <span class="source-tag">Source: ADEME Base Empreinte 2024 / Impact CO2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 2: Score Écologique -->
+            <div class="accordion" id="faq-eco-score">
+                <div class="accordion-header" onclick="toggleAccordion('faq-eco-score')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">Éco</span>
+                        <span class="accordion-title">Qu'est-ce que le score écologique ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>Le <strong>score écologique</strong> évalue l'impact environnemental de votre véhicule sur une échelle de 0 (très polluant) à 1 (propre).</p>
+
+                        <h4>Comment est-il calculé ?</h4>
+                        <ul>
+                            <li><strong>Priorité 1 :</strong> Si nous connaissons les émissions CO2 réelles de votre véhicule (via la base ADEME), nous les utilisons directement</li>
+                            <li><strong>Priorité 2 :</strong> Sinon, nous analysons le type de motorisation (électrique, hybride, essence, diesel)</li>
+                            <li><strong>Priorité 3 :</strong> En dernier recours, nous estimons selon le modèle du véhicule</li>
+                        </ul>
+
+                        <h4>Échelle des catégories</h4>
+                        <table>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Émissions</th>
+                                <th>Score</th>
+                                <th>Impact tarif</th>
+                            </tr>
+                            <tr style="background: #dcfce7;">
+                                <td><strong style="color:#16a34a">A</strong></td>
+                                <td>0-100 g/km</td>
+                                <td>0.70 - 1.00</td>
+                                <td>Bonus -12%</td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td><strong style="color:#22c55e">B</strong></td>
+                                <td>101-120 g/km</td>
+                                <td>0.55 - 0.69</td>
+                                <td>Tarif normal</td>
+                            </tr>
+                            <tr style="background: #fefce8;">
+                                <td><strong style="color:#ca8a04">C</strong></td>
+                                <td>121-140 g/km</td>
+                                <td>0.45 - 0.54</td>
+                                <td>Tarif normal</td>
+                            </tr>
+                            <tr style="background: #fff7ed;">
+                                <td><strong style="color:#ea580c">D</strong></td>
+                                <td>141-160 g/km</td>
+                                <td>0.30 - 0.44</td>
+                                <td>Contribution applicable</td>
+                            </tr>
+                            <tr style="background: #fef2f2;">
+                                <td><strong style="color:#dc2626">E</strong></td>
+                                <td>161+ g/km</td>
+                                <td>0.00 - 0.29</td>
+                                <td>Contribution applicable</td>
+                            </tr>
+                        </table>
+
+                        <span class="source-tag">Basé sur les étiquettes énergie/CO2 françaises officielles</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 3: Capacité Contributive -->
+            <div class="accordion" id="faq-social">
+                <div class="accordion-header" onclick="toggleAccordion('faq-social')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">€</span>
+                        <span class="accordion-title">Qu'est-ce que la capacité contributive ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>La <strong>capacité contributive</strong> est un indicateur social qui module la contribution écologique en fonction de vos moyens financiers estimés.</p>
+
+                        <div class="highlight-box">
+                            <strong>Notre philosophie :</strong> Un malus écologique ne doit pas pénaliser les personnes aux revenus modestes qui n'ont pas les moyens de changer de véhicule.
+                        </div>
+
+                        <h4>Comment est-elle calculée ?</h4>
+                        <p>Nous estimons la capacité contributive à partir de la <strong>valeur ARGUS</strong> de votre véhicule :</p>
+
+                        <div class="formula-box">
+                            Capacité = min(valeur_argus / 35000, 1.0)
+                        </div>
+
+                        <table>
+                            <tr>
+                                <th>Niveau</th>
+                                <th>Valeur ARGUS</th>
+                                <th>Effet sur le malus</th>
+                            </tr>
+                            <tr>
+                                <td><span style="color:#16a34a">●</span> Protégée</td>
+                                <td>&lt; 10 500 €</td>
+                                <td><strong>Malus exonéré</strong> (0%)</td>
+                            </tr>
+                            <tr>
+                                <td><span style="color:#ca8a04">●</span> Moyenne</td>
+                                <td>10 500 € - 21 000 €</td>
+                                <td>Contribution modérée (+5%)</td>
+                            </tr>
+                            <tr>
+                                <td><span style="color:#ea580c">●</span> Élevée</td>
+                                <td>&gt; 21 000 €</td>
+                                <td>Contribution normale (+15%)</td>
+                            </tr>
+                        </table>
+
+                        <div class="highlight-box warning">
+                            <strong>Important :</strong> Ce système garantit que les ménages modestes ne sont jamais pénalisés pour un véhicule polluant qu'ils ne peuvent pas remplacer.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 4: Équivalences CO2 -->
+            <div class="accordion" id="faq-equivalences">
+                <div class="accordion-header" onclick="toggleAccordion('faq-equivalences')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">≈</span>
+                        <span class="accordion-title">Comment interpréter les équivalences CO2 ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>Pour rendre les émissions CO2 plus concrètes, nous les traduisons en équivalences de la vie quotidienne.</p>
+
+                        <table>
+                            <tr>
+                                <th>Équivalence</th>
+                                <th>Valeur</th>
+                                <th>Explication</th>
+                            </tr>
+                            <tr>
+                                <td>Arbres</td>
+                                <td>25 kg CO2/an</td>
+                                <td>Absorption moyenne d'un arbre feuillu par an</td>
+                            </tr>
+                            <tr>
+                                <td>km en TGV</td>
+                                <td>2.4 g CO2/km</td>
+                                <td>Le TGV est le transport le plus propre</td>
+                            </tr>
+                            <tr>
+                                <td>Charges smartphone</td>
+                                <td>5 g CO2/charge</td>
+                                <td>Recharge complète d'un smartphone</td>
+                            </tr>
+                            <tr>
+                                <td>Repas avec bœuf</td>
+                                <td>7 kg CO2/repas</td>
+                                <td>Impact de la viande bovine</td>
+                            </tr>
+                            <tr>
+                                <td>Streaming vidéo</td>
+                                <td>36 g CO2/heure</td>
+                                <td>Netflix, YouTube, etc.</td>
+                            </tr>
+                            <tr>
+                                <td>Douche chaude</td>
+                                <td>500 g CO2/douche</td>
+                                <td>Douche de 5 minutes</td>
+                            </tr>
+                        </table>
+
+                        <span class="source-tag">Sources: ADEME, études environnementales diverses</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 5: Quota Carbone Annuel -->
+            <div class="accordion" id="faq-quota">
+                <div class="accordion-header" onclick="toggleAccordion('faq-quota')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">2T</span>
+                        <span class="accordion-title">Qu'est-ce que le quota carbone annuel de 2 tonnes ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>Le quota de <strong>2 tonnes de CO2 par personne et par an</strong> est l'objectif fixé pour limiter le réchauffement climatique à 2°C d'ici 2050.</p>
+
+                        <div class="highlight-box info">
+                            <strong>Accord de Paris (2015) :</strong> Pour respecter les engagements climatiques mondiaux, chaque habitant de la planète devrait limiter son empreinte carbone à environ 2 tonnes de CO2e par an.
+                        </div>
+
+                        <h4>Contexte actuel</h4>
+                        <ul>
+                            <li><strong>Français moyen :</strong> ~9 tonnes CO2/an</li>
+                            <li><strong>Objectif 2050 :</strong> 2 tonnes CO2/an</li>
+                            <li><strong>Réduction nécessaire :</strong> -78%</li>
+                        </ul>
+
+                        <p>Quand vous voyez que votre trajet représente <strong>X% de votre quota annuel</strong>, cela vous aide à comprendre l'impact de vos déplacements sur votre budget carbone.</p>
+
+                        <h4>Pourquoi utiliser Billie Green ?</h4>
+                        <p>En choisissant notre bus électrique plutôt que votre voiture, vous pouvez réduire jusqu'à <strong>50-75%</strong> des émissions de votre trajet, préservant ainsi votre quota pour d'autres activités.</p>
+
+                        <span class="source-tag">Source: GIEC, Accord de Paris, Haut Conseil pour le Climat</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 6: Avantage Billie Green -->
+            <div class="accordion" id="faq-billie">
+                <div class="accordion-header" onclick="toggleAccordion('faq-billie')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">BG</span>
+                        <span class="accordion-title">Pourquoi Billie Green est-il si avantageux ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p><strong>Billie Green</strong> est un service de bus électrique qui transporte votre voiture sur le toit, combinant le meilleur des deux mondes.</p>
+
+                        <div class="highlight-box">
+                            <strong>Notre facteur d'émission : 50 gCO2e/pers.km</strong><br>
+                            C'est 4x moins qu'une voiture diesel et vous arrivez avec votre véhicule.
+                        </div>
+
+                        <h4>Comparaison sur un Paris-Lyon (465 km)</h4>
+                        <table>
+                            <tr>
+                                <th>Transport</th>
+                                <th>CO2 émis</th>
+                                <th>Économie vs diesel</th>
+                            </tr>
+                            <tr style="background: #dcfce7;">
+                                <td><strong>Billie Green</strong></td>
+                                <td>23.3 kg</td>
+                                <td><strong>-77%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>TGV</td>
+                                <td>1.1 kg</td>
+                                <td>-99% (sans voiture)</td>
+                            </tr>
+                            <tr>
+                                <td>Voiture électrique</td>
+                                <td>48.1 kg</td>
+                                <td>-52%</td>
+                            </tr>
+                            <tr>
+                                <td>Voiture diesel</td>
+                                <td>101.2 kg</td>
+                                <td>Référence</td>
+                            </tr>
+                            <tr>
+                                <td>Avion</td>
+                                <td>120.0 kg</td>
+                                <td>+19%</td>
+                            </tr>
+                        </table>
+
+                        <h4>Les avantages Billie Green</h4>
+                        <ul>
+                            <li><strong>Écologique :</strong> Bus 100% électrique</li>
+                            <li><strong>Pratique :</strong> Votre voiture vous attend à l'arrivée</li>
+                            <li><strong>Confortable :</strong> Voyagez sans conduire</li>
+                            <li><strong>Économique :</strong> Moins cher que l'essence + péages</li>
+                            <li><strong>Repos :</strong> Travaillez ou dormez pendant le trajet</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordéon 7: Formule de tarification -->
+            <div class="accordion" id="faq-pricing">
+                <div class="accordion-header" onclick="toggleAccordion('faq-pricing')">
+                    <div class="accordion-header-content">
+                        <span class="accordion-icon">f(x)</span>
+                        <span class="accordion-title">Comment est calculé le tarif final ?</span>
+                    </div>
+                    <div class="accordion-arrow">▼</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>Notre tarification combine <strong>équité sociale</strong> et <strong>incitation écologique</strong> :</p>
+
+                        <div class="formula-box">
+                            Prix final = Prix base × (1 + ajustement_éco) × (1 - bonus_covoiturage)
+                        </div>
+
+                        <h4>Étape 1 : Prix de base</h4>
+                        <div class="formula-box">
+                            Prix base = max(distance_km × 0.15 €/km, 20 €)
+                        </div>
+
+                        <h4>Étape 2 : Ajustement écologique</h4>
+                        <table>
+                            <tr>
+                                <th>Situation</th>
+                                <th>Ajustement</th>
+                            </tr>
+                            <tr style="background: #dcfce7;">
+                                <td>Véhicule propre (score ≥ 0.70)</td>
+                                <td><strong>-12%</strong> (bonus)</td>
+                            </tr>
+                            <tr>
+                                <td>Véhicule moyen (score 0.45-0.69)</td>
+                                <td>0%</td>
+                            </tr>
+                            <tr>
+                                <td>Polluant + capacité élevée</td>
+                                <td>+15%</td>
+                            </tr>
+                            <tr>
+                                <td>Polluant + capacité moyenne</td>
+                                <td>+5%</td>
+                            </tr>
+                            <tr style="background: #dcfce7;">
+                                <td>Polluant + capacité protégée</td>
+                                <td><strong>0%</strong> (exonéré)</td>
+                            </tr>
+                        </table>
+
+                        <h4>Étape 3 : Bonus covoiturage</h4>
+                        <p>Chaque passager supplémentaire réduit le prix de <strong>5%</strong> :</p>
+                        <ul>
+                            <li>2 passagers : -5%</li>
+                            <li>3 passagers : -10%</li>
+                            <li>4 passagers : -15%</li>
+                            <li>5+ passagers : -20%</li>
+                        </ul>
+
+                        <div class="highlight-box">
+                            <strong>Exemple :</strong> Un trajet Paris-Lyon (465 km) avec une voiture électrique (bonus -12%) et 2 passagers (bonus -5%) :<br>
+                            69.75 € × 0.88 × 0.95 = <strong>58.31 € par personne</strong>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -803,9 +1760,17 @@
         ];
 
         function getDistance(origin, destination) {
-            const key1 = `${origin}-${destination}`;
-            const key2 = `${destination}-${origin}`;
-            return DISTANCES[key1] || DISTANCES[key2] || null;
+            // Normaliser les noms de villes (première lettre majuscule)
+            const normalize = (str) => str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
+            const o = normalize(origin);
+            const d = normalize(destination);
+
+            const key1 = `${o}-${d}`;
+            const key2 = `${d}-${o}`;
+            console.log('Recherche distance pour:', key1, 'ou', key2);
+            const distance = DISTANCES[key1] || DISTANCES[key2] || null;
+            console.log('Distance trouvée:', distance);
+            return distance;
         }
 
         // =====================================================================
@@ -1263,7 +2228,11 @@
                     model: document.getElementById('model').value.toUpperCase(),
                     year: parseInt(document.getElementById('year').value) || null,
                     energy: document.getElementById('energy').value || null,
-                    argus_value: parseFloat(document.getElementById('argus').value) || null
+                    argus_value: parseFloat(document.getElementById('argus').value) || null,
+                    mileage: parseInt(document.getElementById('mileage').value) || null,
+                    annual_km: parseInt(document.getElementById('annualKm').value) || 10000,
+                    ownership: document.getElementById('vehicleOwnership').value,
+                    segment: document.getElementById('vehicleSegment').value || null
                 },
                 trip: {
                     origin: document.getElementById('origin').value,
@@ -1273,8 +2242,13 @@
                     is_holiday: document.getElementById('isHoliday').checked,
                     is_summer: false
                 },
+                context: {
+                    zone: document.getElementById('zone').value,
+                    alternatives: document.getElementById('alternatives').value,
+                    trip_purpose: document.getElementById('tripPurpose').value
+                },
                 passengers: parseInt(document.getElementById('passengers').value),
-                use_openroute: useOpenRoute  // Toggle OpenRouteService
+                use_openroute: useOpenRoute
             };
 
             if (formData.trip.origin === formData.trip.destination) {
@@ -1313,6 +2287,10 @@
         // =====================================================================
 
         function displayApiResults(data, passengers) {
+            console.log('=== displayApiResults ===');
+            console.log('Data reçue:', data);
+            console.log('Passengers:', passengers);
+
             document.getElementById('results').classList.add('visible');
             document.getElementById('finalPrice').textContent = Math.round(data.final_price);
 
@@ -1320,10 +2298,28 @@
             document.getElementById('ecoScoreBar').style.width = `${data.eco_score * 100}%`;
             document.getElementById('socialScoreBar').style.width = `${data.social_score * 100}%`;
 
-            // CO2 Badge
+            // CO2 Badge - Afficher les émissions en g/km
             const badge = document.getElementById('co2Badge');
-            badge.textContent = data.co2_category;
-            badge.style.background = data.co2_color;
+
+            // Calculer les émissions g/km si non fourni par le backend
+            let co2PerKmApi = data.co2_details?.co2_per_km;
+            if (!co2PerKmApi && data.co2_details?.co2_per_person_kg && data.trip_info?.distance_km) {
+                // Estimer depuis le CO2 total et la distance
+                co2PerKmApi = (data.co2_details.co2_per_person_kg * passengers * 1000) / data.trip_info.distance_km;
+            }
+            if (!co2PerKmApi) {
+                // Valeur par défaut basée sur le type courant
+                co2PerKmApi = 200;
+            }
+
+            badge.textContent = `${Math.round(co2PerKmApi)} g/km`;
+
+            // Couleur selon le niveau d'émissions
+            if (co2PerKmApi <= 100) { badge.style.background = '#16a34a'; }
+            else if (co2PerKmApi <= 130) { badge.style.background = '#22c55e'; }
+            else if (co2PerKmApi <= 170) { badge.style.background = '#eab308'; }
+            else if (co2PerKmApi <= 200) { badge.style.background = '#f97316'; }
+            else { badge.style.background = '#ef4444'; }
             badge.style.color = 'white';
 
             // Eco score text
@@ -1368,15 +2364,18 @@
             document.getElementById('tripDuration').textContent = tripInfo.adjusted_duration_formatted ||
                 `${Math.floor(tripInfo.distance_km / 110)}h${String(Math.round((tripInfo.distance_km / 110 % 1) * 60)).padStart(2, '0')}`;
 
-            // CO2 du trajet - utiliser les valeurs calculées par le backend
-            const co2TripKg = data.co2_trip_kg || 0;
-            const co2SavedKg = data.co2_saved_kg || 0;
-            document.getElementById('tripCO2').textContent = co2SavedKg.toFixed(1);
+            // CO2 du trajet - utiliser les valeurs calculées par le backend ou calculer localement
+            const co2Details = data.co2_details;
+            let co2PerPersonKg;
 
-            // Afficher aussi le CO2 total du trajet
-            const tripCO2Label = document.querySelector('#tripCO2').closest('.trip-stat').querySelector('.trip-stat-label');
-            if (tripCO2Label) {
-                tripCO2Label.innerHTML = `CO₂ évité<br><small style="color:#888">(total: ${co2TripKg.toFixed(1)} kg)</small>`;
+            if (co2Details && co2Details.co2_per_person_kg) {
+                co2PerPersonKg = co2Details.co2_per_person_kg;
+                document.getElementById('tripCO2').textContent = co2PerPersonKg.toFixed(1);
+            } else {
+                // Calculer localement si le backend ne fournit pas les données
+                const distance = tripInfo.distance_km;
+                co2PerPersonKg = (co2PerKmApi * distance / 1000) / passengers;
+                document.getElementById('tripCO2').textContent = co2PerPersonKg.toFixed(1);
             }
 
             // Source du calcul de distance
@@ -1387,31 +2386,269 @@
                 tripSource.innerHTML = 'Distance calculée en <span class="local-badge">mode local</span>';
             }
 
+            // =====================================================
+            // AFFICHAGE CO2 ENRICHI (Modèle GreenGo)
+            // =====================================================
+            console.log('CO2 Details reçus:', data.co2_details);
+            if (data.co2_details) {
+                displayCO2Details(data.co2_details);
+            } else {
+                // Fallback: afficher les infos CO2 calculées localement
+                console.log('Calcul CO2 local pour affichage enrichi');
+                displayLocalCO2Info(co2PerPersonKg, tripInfo.distance_km, passengers, null);
+            }
+
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function displayCO2Details(co2) {
+            console.log('Affichage CO2 Details:', co2);
+            const section = document.getElementById('co2Section');
+            section.style.display = 'block';
+
+            // Quota badge
+            const quotaBadge = document.getElementById('quotaBadge');
+            quotaBadge.textContent = `${co2.quota_percent.toFixed(1)}% quota annuel`;
+            if (co2.quota_percent < 2) {
+                quotaBadge.className = 'quota-badge quota-low';
+            } else if (co2.quota_percent < 5) {
+                quotaBadge.className = 'quota-badge quota-medium';
+            } else {
+                quotaBadge.className = 'quota-badge quota-high';
+            }
+
+            // Billie Green Savings
+            const savings = co2.savings_message;
+            if (savings && co2.co2_saved_vs_car_kg > 0) {
+                document.getElementById('billieSavings').style.display = 'block';
+                document.getElementById('savingsIcon').textContent = savings.icon || '🌿';
+                document.getElementById('savingsHeadline').textContent = savings.headline || `Économisez ${co2.co2_saved_vs_car_kg} kg de CO₂`;
+                document.getElementById('savingsDetail').textContent = savings.percent || `${co2.co2_saved_percent.toFixed(0)}% d'émissions en moins`;
+                document.getElementById('savingsTreesText').textContent = savings.trees || `Équivalent à ${(co2.co2_saved_vs_car_kg / 25).toFixed(1)} arbre(s)`;
+            } else {
+                document.getElementById('billieSavings').style.display = 'none';
+            }
+
+            // Équivalences
+            if (co2.equivalences) {
+                document.getElementById('eqTrees').textContent = co2.equivalences.arbres_annee || '--';
+                document.getElementById('eqTGV').textContent = formatNumber(co2.equivalences.km_tgv_equivalent) || '--';
+                document.getElementById('eqPhone').textContent = formatNumber(co2.equivalences.charges_smartphone) || '--';
+                document.getElementById('eqBeef').textContent = co2.equivalences.repas_boeuf || '--';
+                document.getElementById('eqNetflix').textContent = formatNumber(co2.equivalences.heures_netflix) || '--';
+                document.getElementById('eqShower').textContent = formatNumber(co2.equivalences.douches_chaudes) || '--';
+            }
+
+            // Comparaison transports
+            if (co2.comparison) {
+                displayTransportComparison(co2.comparison, co2.co2_per_person_kg);
+            }
+
+            // Quota progress
+            document.getElementById('quotaValue').textContent = `${co2.quota_percent.toFixed(1)}%`;
+            const quotaFill = document.getElementById('quotaFill');
+            const quotaPercent = Math.min(co2.quota_percent, 100);
+            quotaFill.style.width = `${quotaPercent}%`;
+
+            // Couleur selon le niveau
+            if (quotaPercent < 2) {
+                quotaFill.style.background = 'linear-gradient(90deg, #16a34a, #22c55e)';
+            } else if (quotaPercent < 5) {
+                quotaFill.style.background = 'linear-gradient(90deg, #eab308, #facc15)';
+            } else {
+                quotaFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+            }
+        }
+
+        function displayTransportComparison(comparison, userCO2) {
+            const container = document.getElementById('transportBars');
+
+            // Définir les transports à afficher avec leurs infos
+            const transports = [
+                { key: 'billie_green', label: 'Billie Green', class: 'billie', icon: '🚌' },
+                { key: 'tgv', label: 'TGV', class: 'tgv', icon: '🚄' },
+                { key: 'bus', label: 'Bus/Autocar', class: 'bus', icon: '🚍' },
+                { key: 'voiture_electrique', label: 'Voiture élec.', class: 'car', icon: '🚗' },
+                { key: 'avion', label: 'Avion', class: 'avion', icon: '✈️' }
+            ];
+
+            // Trouver le max pour normaliser les barres
+            let maxCO2 = userCO2;
+            transports.forEach(t => {
+                if (comparison[t.key] && comparison[t.key] > maxCO2) {
+                    maxCO2 = comparison[t.key];
+                }
+            });
+
+            // Ajouter "Votre trajet" en premier
+            let html = `
+                <div class="transport-bar">
+                    <span class="transport-label">🚙 Votre trajet</span>
+                    <div class="transport-bar-container">
+                        <div class="transport-bar-fill car" style="width: ${(userCO2 / maxCO2 * 100).toFixed(1)}%"></div>
+                    </div>
+                    <span class="transport-value">${userCO2.toFixed(1)} kg</span>
+                </div>
+            `;
+
+            // Ajouter les autres transports
+            transports.forEach(t => {
+                const co2 = comparison[t.key] || 0;
+                const width = maxCO2 > 0 ? (co2 / maxCO2 * 100) : 0;
+
+                html += `
+                    <div class="transport-bar">
+                        <span class="transport-label">${t.icon} ${t.label}</span>
+                        <div class="transport-bar-container">
+                            <div class="transport-bar-fill ${t.class}" style="width: ${width.toFixed(1)}%"></div>
+                        </div>
+                        <span class="transport-value">${co2.toFixed(1)} kg</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '--';
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return Math.round(num).toString();
+        }
+
+        function displayLocalCO2Info(co2PerPersonKg, distance, passengers, energy) {
+            const section = document.getElementById('co2Section');
+            section.style.display = 'block';
+
+            // Quota (2 tonnes = 2000 kg)
+            const quotaPercent = (co2PerPersonKg / 2000) * 100;
+
+            // Quota badge
+            const quotaBadge = document.getElementById('quotaBadge');
+            quotaBadge.textContent = `${quotaPercent.toFixed(1)}% quota annuel`;
+            if (quotaPercent < 2) {
+                quotaBadge.className = 'quota-badge quota-low';
+            } else if (quotaPercent < 5) {
+                quotaBadge.className = 'quota-badge quota-medium';
+            } else {
+                quotaBadge.className = 'quota-badge quota-high';
+            }
+
+            // Billie Green comparison (50 gCO2/pers.km)
+            const billieGreenCO2 = (50 * distance) / 1000;
+            const co2Saved = co2PerPersonKg - billieGreenCO2;
+            const co2SavedPercent = co2Saved > 0 ? (co2Saved / co2PerPersonKg * 100) : 0;
+
+            // Billie Green Savings
+            if (co2Saved > 0) {
+                document.getElementById('billieSavings').style.display = 'block';
+                document.getElementById('savingsIcon').textContent = co2Saved > 25 ? '🌳' : '🌱';
+                document.getElementById('savingsHeadline').textContent = `Économisez ${co2Saved.toFixed(1)} kg de CO₂ avec Billie Green`;
+                document.getElementById('savingsDetail').textContent = `Soit ${co2SavedPercent.toFixed(0)}% d'émissions en moins`;
+                const trees = co2Saved / 25;
+                document.getElementById('savingsTreesText').textContent = `Équivalent à ${trees.toFixed(1)} arbre(s) planté(s)`;
+            } else {
+                document.getElementById('billieSavings').style.display = 'none';
+            }
+
+            // Équivalences
+            document.getElementById('eqTrees').textContent = (co2PerPersonKg / 25).toFixed(1);
+            document.getElementById('eqTGV').textContent = formatNumber(co2PerPersonKg * (1000 / 2.4));
+            document.getElementById('eqPhone').textContent = formatNumber(co2PerPersonKg / 0.005);
+            document.getElementById('eqBeef').textContent = (co2PerPersonKg / 7).toFixed(1);
+            document.getElementById('eqNetflix').textContent = formatNumber(co2PerPersonKg / 0.036);
+            document.getElementById('eqShower').textContent = formatNumber(co2PerPersonKg / 0.5);
+
+            // Comparaison transports (simplifiée)
+            const comparison = {
+                billie_green: billieGreenCO2,
+                tgv: (2.4 * distance) / 1000,
+                bus: (29.4 * distance) / 1000,
+                voiture_electrique: (103.4 * distance) / 1000 / passengers,
+                avion: (258 * distance) / 1000
+            };
+            displayTransportComparison(comparison, co2PerPersonKg);
+
+            // Quota progress
+            document.getElementById('quotaValue').textContent = `${quotaPercent.toFixed(1)}%`;
+            const quotaFill = document.getElementById('quotaFill');
+            const quotaPercentCapped = Math.min(quotaPercent, 100);
+            quotaFill.style.width = `${quotaPercentCapped}%`;
+
+            if (quotaPercentCapped < 2) {
+                quotaFill.style.background = 'linear-gradient(90deg, #16a34a, #22c55e)';
+            } else if (quotaPercentCapped < 5) {
+                quotaFill.style.background = 'linear-gradient(90deg, #eab308, #facc15)';
+            } else {
+                quotaFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+            }
+        }
+
         function displayLocalResults(formData) {
+            console.log('=== displayLocalResults ===');
+            console.log('FormData:', formData);
+
             const distance = getDistance(formData.trip.origin, formData.trip.destination);
+            console.log('Distance calculée:', distance);
 
             if (!distance) {
                 alert(`Distance non trouvée pour ${formData.trip.origin} - ${formData.trip.destination}`);
                 return;
             }
 
-            // Prix de base
-            let basePrice = distance * 0.15;
-            basePrice = Math.max(basePrice, 20);
+            // Prix de base (pour le trajet total)
+            let basePriceTotal = distance * 0.15;
+            basePriceTotal = Math.max(basePriceTotal, 20);
 
-            // Score écologique
+            // =====================================================
+            // AJUSTEMENT HORAIRE ET VACANCES
+            // =====================================================
+            const hour = parseInt(document.getElementById('hour').value) || 10;
+            const isHoliday = document.getElementById('isHoliday').checked;
+            const dayOfWeek = parseInt(document.getElementById('dayOfWeek').value);
+
+            let timeAdjustment = 0;
+            let timeAdjustmentLabel = '';
+
+            // Heures de pointe: 7h-9h et 17h-19h en semaine
+            const isPeakHour = (hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19);
+            const isWeekday = dayOfWeek >= 0 && dayOfWeek <= 4;
+
+            if (isPeakHour && isWeekday && !isHoliday) {
+                timeAdjustment = 3; // +3€ en heures de pointe
+                timeAdjustmentLabel = 'Heure de pointe';
+            } else if (isHoliday) {
+                timeAdjustment = 4; // +4€ en période de vacances (forte demande)
+                timeAdjustmentLabel = 'Période vacances';
+            } else if (dayOfWeek === 4 || dayOfWeek === 6) {
+                // Vendredi soir ou dimanche (retours)
+                timeAdjustment = 2;
+                timeAdjustmentLabel = 'Week-end';
+            } else if (hour >= 22 || hour <= 5) {
+                // Heures creuses (nuit)
+                timeAdjustment = -2;
+                timeAdjustmentLabel = 'Heures creuses';
+            }
+
+            // Prix de base avec ajustement horaire
+            let basePrice = basePriceTotal + timeAdjustment;
+
+            // =====================================================
+            // CALCUL DU SCORE ÉCOLOGIQUE (enrichi)
+            // =====================================================
             const energyScores = {
                 'ELECTRIQUE': 0.95,
+                'HYBRIDE_RECHARGEABLE': 0.80,
                 'HYBRIDE': 0.65,
-                'ESSENCE': 0.4,
+                'GPL': 0.55,
+                'ESSENCE': 0.40,
                 'DIESEL': 0.35,
-                '': 0.35
+                '': 0.40
             };
 
-            const electricModels = ['MODEL 3', 'MODEL S', 'MODEL X', 'MODEL Y', 'ZOE', 'E-TRON', 'ID.3', 'ID.4', 'LEAF', 'KONA ELECTRIC', 'E-208', 'SPRING'];
+            const electricModels = ['MODEL 3', 'MODEL S', 'MODEL X', 'MODEL Y', 'ZOE', 'E-TRON', 'ID.3', 'ID.4', 'LEAF', 'KONA ELECTRIC', 'E-208', 'SPRING', 'IONIQ', 'EQA', 'EQB', 'EQC', 'I3', 'I4', 'IX'];
             const isElectric = formData.vehicle.energy === 'ELECTRIQUE' ||
                                electricModels.some(m => formData.vehicle.model.toUpperCase().includes(m));
 
@@ -1425,13 +2662,133 @@
             } else if (isDiesel) {
                 ecoScore = 0.35;
             } else if (formData.vehicle.energy) {
-                ecoScore = energyScores[formData.vehicle.energy] || 0.35;
+                ecoScore = energyScores[formData.vehicle.energy] || 0.40;
             } else {
-                ecoScore = 0.35;
+                ecoScore = 0.40;
             }
 
-            const argus = formData.vehicle.argus_value || 10000;
-            const socialScore = Math.min(argus / 35000, 1);
+            // Ajustement selon l'âge du véhicule (les vieux véhicules polluent plus)
+            const vehicleYear = formData.vehicle.year || 2015;
+            const vehicleAge = new Date().getFullYear() - vehicleYear;
+            if (vehicleAge > 15) {
+                ecoScore = Math.max(0.1, ecoScore - 0.15);
+            } else if (vehicleAge > 10) {
+                ecoScore = Math.max(0.15, ecoScore - 0.10);
+            } else if (vehicleAge > 5) {
+                ecoScore = Math.max(0.2, ecoScore - 0.05);
+            }
+
+            // Ajustement selon le kilométrage annuel (gros rouleurs = plus d'impact)
+            const annualKm = formData.vehicle.annual_km || 10000;
+            if (annualKm > 30000) {
+                ecoScore = Math.max(0.1, ecoScore - 0.10);
+            } else if (annualKm > 20000) {
+                ecoScore = Math.max(0.15, ecoScore - 0.05);
+            } else if (annualKm < 5000) {
+                ecoScore = Math.min(1, ecoScore + 0.05); // Bonus petit rouleur
+            }
+
+            // Ajustement selon le segment (SUV/Premium pénalisés)
+            const segment = formData.vehicle.segment;
+            if (segment === 'suv' || segment === 'premium') {
+                ecoScore = Math.max(0.1, ecoScore - 0.10);
+            } else if (segment === 'city') {
+                ecoScore = Math.min(1, ecoScore + 0.05);
+            }
+
+            // =====================================================
+            // CALCUL DU SCORE SOCIAL (enrichi - multi-critères)
+            // =====================================================
+
+            // Estimation de la valeur ARGUS si non fournie
+            let argus = formData.vehicle.argus_value;
+            if (!argus) {
+                // Estimation basée sur l'âge et le segment
+                const segmentBasePrices = {
+                    'city': 15000, 'compact': 22000, 'sedan': 30000,
+                    'suv': 35000, 'premium': 50000, 'utility': 25000
+                };
+                const vehicleBasePrice = segmentBasePrices[segment] || 20000;
+                const depreciationRate = 0.15; // 15% par an
+                argus = vehicleBasePrice * Math.pow(1 - depreciationRate, vehicleAge);
+                argus = Math.max(argus, 1500); // Minimum 1500€
+            }
+
+            // Score basé sur la valeur du véhicule (0 à 0.4)
+            const vehicleValueScore = Math.min(argus / 50000, 1) * 0.4;
+
+            // Score basé sur la zone (rural = moins d'alternatives = plus protégé)
+            const zoneScores = {
+                'urban': 0.3,      // Bien desservi
+                'suburban': 0.15,  // Moyennement desservi
+                'rural': 0.0       // Mal desservi = protégé
+            };
+            const zoneScore = (zoneScores[formData.context?.zone] || 0.15) * 0.3;
+
+            // Score basé sur les alternatives disponibles
+            const altScores = {
+                'good': 0.3,      // Bonnes alternatives = peut contribuer
+                'some': 0.2,      // Quelques alternatives
+                'limited': 0.1,   // Peu d'alternatives
+                'none': 0.0       // Aucune alternative = protégé
+            };
+            const altScore = (altScores[formData.context?.alternatives] || 0.15) * 0.3;
+
+            // Score basé sur le type de propriété
+            const ownershipScores = {
+                'company': 0.4,   // Véhicule de fonction = peut contribuer
+                'owner': 0.2,     // Propriétaire
+                'credit': 0.1,    // Crédit = contrainte financière
+                'lld': 0.15       // LLD = engagement
+            };
+            const ownershipScore = (ownershipScores[formData.vehicle.ownership] || 0.2);
+
+            // Score social combiné (pondéré)
+            let socialScore = vehicleValueScore + zoneScore + altScore;
+
+            // Ajustement selon le motif du trajet
+            const tripPurpose = formData.context?.trip_purpose;
+            if (tripPurpose === 'medical' || tripPurpose === 'essential') {
+                socialScore = Math.max(0, socialScore - 0.2); // Trajet contraint = protégé
+            } else if (tripPurpose === 'work') {
+                socialScore = Math.max(0, socialScore - 0.1); // Trajet pro = semi-protégé
+            }
+
+            // Normaliser entre 0 et 1
+            socialScore = Math.max(0, Math.min(1, socialScore));
+
+            // =====================================================
+            // CALCUL CO2 DU TRAJET (déplacé ici pour badge g/km)
+            // =====================================================
+            const co2Factors = {
+                'ELECTRIQUE': 103,
+                'HYBRIDE_RECHARGEABLE': 130,
+                'HYBRIDE': 168,
+                'GPL': 185,
+                'ESSENCE': 223,
+                'DIESEL': 218
+            };
+
+            let co2PerKm = co2Factors[formData.vehicle.energy] || 200;
+
+            // Ajustement selon l'âge du véhicule
+            if (vehicleAge > 15) {
+                co2PerKm *= 1.20;
+            } else if (vehicleAge > 10) {
+                co2PerKm *= 1.10;
+            }
+
+            // Ajustement selon le segment
+            if (segment === 'suv' || segment === 'premium') {
+                co2PerKm *= 1.25;
+            } else if (segment === 'utility') {
+                co2PerKm *= 1.15;
+            } else if (segment === 'city') {
+                co2PerKm *= 0.90;
+            }
+
+            const co2TotalKg = (co2PerKm * distance) / 1000;
+            const co2PerPersonKg = co2TotalKg / formData.passengers;
 
             let adjustment = 0;
             let adjustmentLabel = '';
@@ -1457,8 +2814,14 @@
                 }
             }
 
-            const passengerBonus = (formData.passengers - 1) * 0.05;
-            const finalPrice = basePrice * (1 + adjustment) * (1 - passengerBonus);
+            // Prix après ajustement écologique
+            const adjustedPrice = basePrice * (1 + adjustment);
+
+            // Division par nombre de passagers avec dégressivité
+            // 1 passager: prix total, 2 passagers: /1.7, 3 passagers: /2.3, 4+: /2.8
+            const passengerDivisors = { 1: 1, 2: 1.7, 3: 2.3, 4: 2.8, 5: 3.2 };
+            const divisor = passengerDivisors[formData.passengers] || 3.2;
+            const finalPrice = adjustedPrice / divisor;
 
             // Affichage
             document.getElementById('results').classList.add('visible');
@@ -1467,12 +2830,20 @@
             document.getElementById('ecoScoreBar').style.width = `${ecoScore * 100}%`;
             document.getElementById('socialScoreBar').style.width = `${socialScore * 100}%`;
 
+            // Affichage des émissions en g/km au lieu de la lettre
+            console.log('CO2 per km calculé:', co2PerKm);
+            console.log('CO2 total kg:', co2TotalKg);
+            console.log('CO2 per person kg:', co2PerPersonKg);
+
             const badge = document.getElementById('co2Badge');
-            if (ecoScore > 0.8) { badge.textContent = 'A'; badge.style.background = '#16a34a'; }
-            else if (ecoScore > 0.6) { badge.textContent = 'B'; badge.style.background = '#22c55e'; }
-            else if (ecoScore > 0.4) { badge.textContent = 'C'; badge.style.background = '#eab308'; }
-            else if (ecoScore > 0.3) { badge.textContent = 'D'; badge.style.background = '#f97316'; }
-            else { badge.textContent = 'E'; badge.style.background = '#ef4444'; }
+            badge.textContent = `${Math.round(co2PerKm)} g/km`;
+
+            // Couleur selon le niveau d'émissions
+            if (co2PerKm <= 100) { badge.style.background = '#16a34a'; }  // Très bon (électrique)
+            else if (co2PerKm <= 130) { badge.style.background = '#22c55e'; }  // Bon (hybride rechargeable)
+            else if (co2PerKm <= 170) { badge.style.background = '#eab308'; }  // Moyen (hybride)
+            else if (co2PerKm <= 200) { badge.style.background = '#f97316'; }  // Élevé
+            else { badge.style.background = '#ef4444'; }  // Très élevé (diesel/essence)
             badge.style.color = 'white';
 
             const socialLabel = document.getElementById('socialLabel');
@@ -1499,8 +2870,17 @@
                 socialScore > 0.3 ? 'Contribution modérée' : 'Malus écologique exonéré';
 
             const breakdown = [
-                { label: 'Prix de base', detail: `${distance} km × 0,15 €/km`, value: `${basePrice.toFixed(2)} €` }
+                { label: 'Prix de base', detail: `${distance} km × 0,15 €/km`, value: `${basePriceTotal.toFixed(2)} €` }
             ];
+
+            // Ajustement horaire
+            if (timeAdjustment !== 0) {
+                breakdown.push({
+                    label: timeAdjustmentLabel,
+                    detail: timeAdjustment > 0 ? 'Forte demande' : 'Faible demande',
+                    value: `${timeAdjustment > 0 ? '+' : ''}${timeAdjustment.toFixed(0)} €`
+                });
+            }
 
             if (adjustment !== 0) {
                 breakdown.push({
@@ -1517,15 +2897,16 @@
             }
 
             if (formData.passengers > 1) {
+                const reduction = Math.round((1 - 1/divisor) * 100);
                 breakdown.push({
-                    label: 'Bonus covoiturage',
-                    detail: `${formData.passengers} passagers`,
-                    value: `-${(passengerBonus * 100).toFixed(0)}%`
+                    label: 'Partage covoiturage',
+                    detail: `${formData.passengers} passagers (÷${divisor})`,
+                    value: `-${reduction}%`
                 });
             }
 
             breakdown.push({
-                label: 'Total',
+                label: 'Total par personne',
                 detail: 'Tarif Billie Green',
                 value: `${Math.round(finalPrice)} €`
             });
@@ -1545,11 +2926,13 @@
             document.getElementById('tripDistance').textContent = distance;
             document.getElementById('tripDuration').textContent = `${hours}h${minutes.toString().padStart(2, '0')}`;
 
-            const co2PerKm = ecoScore > 0.8 ? 0 : ecoScore > 0.6 ? 80 : ecoScore > 0.4 ? 130 : 180;
-            const co2Saved = (co2PerKm * distance / 1000) * (1 - 1/formData.passengers);
-            document.getElementById('tripCO2').textContent = co2Saved.toFixed(1);
+            // Afficher CO2 du trajet (déjà calculé plus haut)
+            document.getElementById('tripCO2').textContent = co2PerPersonKg.toFixed(1);
 
             document.getElementById('tripSource').innerHTML = 'Distance calculée en <span class="local-badge">mode local</span>';
+
+            // Afficher les infos CO2 enrichies
+            displayLocalCO2Info(co2PerPersonKg, distance, formData.passengers, formData.vehicle.energy);
 
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
@@ -1593,6 +2976,29 @@
             } else {
                 orsStatusBadge.textContent = 'Local';
                 orsStatusBadge.className = 'toggle-status off';
+            }
+        }
+
+        // =====================================================================
+        // ACCORDÉON FAQ
+        // =====================================================================
+
+        function toggleAccordion(id) {
+            const accordion = document.getElementById(id);
+            if (!accordion) return;
+
+            const isOpen = accordion.classList.contains('open');
+
+            // Fermer tous les autres accordéons (optionnel - décommenter pour comportement exclusif)
+            // document.querySelectorAll('.accordion.open').forEach(a => {
+            //     if (a.id !== id) a.classList.remove('open');
+            // });
+
+            // Toggle l'accordéon cliqué
+            if (isOpen) {
+                accordion.classList.remove('open');
+            } else {
+                accordion.classList.add('open');
             }
         }
     </script>

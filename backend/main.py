@@ -21,6 +21,7 @@ from backend.openroute_service import (
     get_city_coords_fallback,
     OpenRouteService
 )
+from backend.co2_calculator import get_co2_calculator, CO2Calculator
 
 
 # Initialisation de l'application
@@ -65,6 +66,32 @@ class PricingRequest(BaseModel):
     use_openroute: bool = Field(True, description="Utiliser OpenRouteService pour le calcul de distance")
 
 
+class CO2Details(BaseModel):
+    """Détails complets des émissions CO2 (modèle GreenGo)."""
+    # Émissions du trajet
+    co2_total_kg: float
+    co2_per_person_kg: float
+    co2_fabrication_kg: float
+    co2_utilisation_kg: float
+
+    # Quota annuel (2 tonnes pour limiter à 2°C)
+    quota_percent: float
+
+    # Comparaison transports alternatifs
+    comparison: Dict[str, float]
+
+    # Équivalences parlantes
+    equivalences: Dict
+
+    # Billie Green (votre service)
+    billie_green_co2_kg: float
+    co2_saved_vs_car_kg: float
+    co2_saved_percent: float
+
+    # Messages
+    savings_message: Dict
+
+
 class PricingResponse(BaseModel):
     final_price: float
     base_price: float
@@ -75,8 +102,7 @@ class PricingResponse(BaseModel):
     co2_category: str
     co2_color: str
     trip_info: Dict
-    co2_trip_kg: float  # CO2 total du trajet en kg
-    co2_saved_kg: float  # CO2 évité grâce au covoiturage
+    co2_details: CO2Details  # Nouveau: détails CO2 enrichis
     explanation: str
     breakdown: List[Dict]
 
@@ -86,6 +112,17 @@ trip_calculator = TripCalculator()
 vehicle_db = None
 openroute_service: Optional[OpenRouteService] = None
 DATA_PATH = Path(__file__).parent.parent / "ADEME-CarLabelling.csv"
+
+
+CO2_REFERENCE_POINTS = [
+    (0,   0.95),
+    (50,  0.85),
+    (100, 0.70),
+    (120, 0.55),
+    (150, 0.40),
+    (200, 0.30),
+    (300, 0.20),  # plafond de pollution
+]
 
 
 # Modèles électriques connus
@@ -116,51 +153,54 @@ DIESEL_SUV_MODELS = [
     'SORENTO', 'SPORTAGE',  # Kia
 ]
 
-
-def calculate_eco_score(energy: str, model: str, co2_g_km: float = None) -> float:
+def interpolate_score(x: float, points: list[tuple[float, float]]) -> float:
     """
-    Calcule le score écologique (0 = polluant, 1 = propre).
+    Interpolation linéaire entre des points (x, score).
+    """
+    if x <= points[0][0]:
+        return points[0][1]
 
-    PRIORITÉ: Utiliser le CO2 réel si disponible, sinon se baser sur le type d'énergie.
+    for i in range(1, len(points)):
+        x0, y0 = points[i - 1]
+        x1, y1 = points[i]
+
+        if x <= x1:
+            # interpolation linéaire
+            ratio = (x - x0) / (x1 - x0)
+            return y0 + ratio * (y1 - y0)
+
+    return points[-1][1]
+
+
+
+def calculate_eco_score(
+    energy: str,
+    model: str,
+    co2_g_km: float = None
+) -> float:
+    """
+    Score écologique continu (0 = polluant, 1 = propre).
     """
     energy = (energy or '').upper()
     model = (model or '').upper()
 
-    # PRIORITÉ 1: Si on a le CO2 réel, l'utiliser pour calculer le score
+    # PRIORITÉ 1: CO2 réel → score continu
     if co2_g_km is not None and co2_g_km >= 0:
-        if co2_g_km == 0:
-            return 0.95  # Électrique pur
-        elif co2_g_km <= 50:
-            return 0.85  # Hybride rechargeable très efficace
-        elif co2_g_km <= 100:
-            return 0.70  # Hybride efficace
-        elif co2_g_km <= 120:
-            return 0.55  # Véhicule économe
-        elif co2_g_km <= 150:
-            return 0.40  # Véhicule moyen
-        elif co2_g_km <= 200:
-            return 0.30  # Véhicule polluant
-        else:
-            return 0.20  # Très polluant
+        return interpolate_score(co2_g_km, CO2_REFERENCE_POINTS)
 
-    # PRIORITÉ 2: Détection par modèle électrique connu
-    is_electric_model = any(m in model for m in ELECTRIC_MODELS)
-    if is_electric_model:
+    # PRIORITÉ 2: modèle électrique connu
+    if any(m in model for m in ELECTRIC_MODELS):
         return 0.95
 
-    # PRIORITÉ 3: Détection par type d'énergie
-    # ATTENTION: "GAZ+ELEC" = hybride diesel, PAS électrique !
-    if energy == 'ELECTRIC' or energy == 'ELECTRIQUE':
+    # PRIORITÉ 3: énergie (fallback)
+    if energy in ('ELECTRIC', 'ELECTRIQUE'):
         return 0.95
 
-    # Hybrides (incluant GAZ+ELEC, ESS+ELEC)
     if 'ELEC' in energy and ('GAZ' in energy or 'ESS' in energy):
-        return 0.65  # Hybride = score moyen, PAS bonus électrique
+        return 0.65  # hybride sans bonus excessif
 
-    # Détection SUV diesel (souvent non dans la base ADEME)
-    is_diesel_suv = any(m in model for m in DIESEL_SUV_MODELS)
-    if is_diesel_suv:
-        return 0.35  # Score diesel
+    if any(m in model for m in DIESEL_SUV_MODELS):
+        return 0.35
 
     energy_scores = {
         'HYBRIDE': 0.65,
@@ -173,8 +213,8 @@ def calculate_eco_score(energy: str, model: str, co2_g_km: float = None) -> floa
         if key in energy:
             return score
 
-    # Par défaut: considérer comme diesel (conservateur pour le malus)
     return 0.35
+
 
 
 def calculate_social_score(argus_value: float) -> float:
@@ -186,26 +226,26 @@ def calculate_social_score(argus_value: float) -> float:
 
 def calculate_ethical_adjustment(eco_score: float, social_score: float) -> tuple:
     """
-    Calcule l'ajustement éthique.
-
-    Logique:
-    - Véhicule propre → bonus -12%
-    - Véhicule polluant + riche → malus +15%
-    - Véhicule polluant + moyen → malus +5%
-    - Véhicule polluant + pauvre → PAS de malus (protégé)
+    Ajustement progressif, sans seuils durs.
     """
-    if eco_score >= 0.7:
-        return -0.12, "Bonus écologique", "Véhicule à faibles émissions"
+    # Bonus écologique progressif
+    if eco_score >= 0.6:
+        bonus = -0.12 * ((eco_score - 0.6) / 0.4)
+        return bonus, "Bonus écologique", "Véhicule à faibles émissions"
 
-    if eco_score < 0.45:
+    # Malus écologique progressif
+    if eco_score <= 0.45:
+        pollution_factor = (0.45 - eco_score) / 0.45
+
         if social_score > 0.6:
-            return 0.15, "Contribution écologique", "Véhicule polluant, capacité contributive élevée"
+            return 0.15 * pollution_factor, "Contribution écologique", "Capacité contributive élevée"
         elif social_score > 0.3:
-            return 0.05, "Contribution écologique", "Véhicule polluant, capacité contributive moyenne"
+            return 0.05 * pollution_factor, "Contribution écologique", "Capacité contributive moyenne"
         else:
             return 0.0, "Malus exonéré", "Capacité contributive limitée"
 
     return 0.0, "", ""
+
 
 
 def get_co2_category(co2_g_km: float = None, eco_score: float = None) -> tuple:
@@ -492,13 +532,34 @@ async def calculate_pricing(request: PricingRequest):
         "detail": "par personne"
     })
 
-    # 10. Calcul du CO2 du trajet
-    # CO2 total = émissions (g/km) × distance (km) / 1000 = kg
-    co2_trip_kg = (co2_g_km * distance) / 1000
+    # 10. Calcul du CO2 enrichi (modèle GreenGo)
+    co2_calc = get_co2_calculator()
+    co2_result = co2_calc.calculate(
+        distance_km=distance,
+        energy=energy,
+        passengers=request.passengers,
+        co2_ademe_g_km=co2_g_km
+    )
 
-    # CO2 évité = CO2 total du trajet
-    # En covoiturant, on évite qu'un autre véhicule fasse ce trajet
-    co2_saved_kg = co2_trip_kg
+    # Messages d'économie
+    savings_message = co2_calc.get_savings_message(
+        co2_result.co2_saved_vs_car_kg,
+        co2_result.co2_saved_percent
+    )
+
+    co2_details = CO2Details(
+        co2_total_kg=co2_result.co2_total_kg,
+        co2_per_person_kg=co2_result.co2_per_person_kg,
+        co2_fabrication_kg=co2_result.co2_fabrication_kg,
+        co2_utilisation_kg=co2_result.co2_utilisation_kg,
+        quota_percent=co2_result.quota_percent,
+        comparison=co2_result.comparison,
+        equivalences=co2_result.equivalences,
+        billie_green_co2_kg=co2_result.billie_green_co2_kg,
+        co2_saved_vs_car_kg=co2_result.co2_saved_vs_car_kg,
+        co2_saved_percent=co2_result.co2_saved_percent,
+        savings_message=savings_message
+    )
 
     # 11. Explication
     if eco_score >= 0.7:
@@ -520,8 +581,6 @@ async def calculate_pricing(request: PricingRequest):
         co2_category=co2_cat,
         co2_color=co2_color,
         trip_info=trip_info,
-        co2_trip_kg=round(co2_trip_kg, 2),
-        co2_saved_kg=round(co2_saved_kg, 2),
         explanation=explanation,
         breakdown=breakdown
     )
